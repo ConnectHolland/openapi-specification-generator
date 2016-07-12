@@ -70,6 +70,13 @@ class Specification
     private $paths = array();
 
     /**
+     * The object to hold data types that can be consumed and produced by operations. These data types can be primitives, arrays or models.
+     *
+     * @var SchemaElementInterface[]
+     */
+    private $definitions = array();
+
+    /**
      * Constructs a new Specification instance.
      *
      * @param Info $info The metadata about the API.
@@ -160,6 +167,21 @@ class Specification
     public function setPath($path, PathItem $pathItem)
     {
         $this->paths[$path] = $pathItem;
+
+        return $this;
+    }
+
+    /**
+     * Adds a single definition.
+     *
+     * @param string                 $definition The name of the definition.
+     * @param SchemaElementInterface $schema     A single definition, mapping the "name" to the schema it defines.
+     *
+     * @return Specification
+     */
+    public function setDefinition($definition, SchemaElementInterface $schema)
+    {
+        $this->definitions[$definition] = $schema;
 
         return $this;
     }

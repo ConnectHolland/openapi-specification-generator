@@ -121,6 +121,25 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Specification::setDefinition sets the instance property and returns the Specification instance.
+     */
+    public function testSetDefinition()
+    {
+        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $schemaElementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $specification = new Specification($infoMock);
+
+        $this->assertSame($specification, $specification->setDefinition('someObject', $schemaElementMock));
+        $this->assertAttributeSame(array('someObject' => $schemaElementMock), 'definitions', $specification);
+    }
+
+    /**
      * Tests if Specification::create returns a new Specification instance and sets the instance properties.
      */
     public function testCreate()
