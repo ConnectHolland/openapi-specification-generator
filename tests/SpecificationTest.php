@@ -102,6 +102,25 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Specification::setPath sets the instance property and returns the Specification instance.
+     */
+    public function testSetPath()
+    {
+        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $pathItemMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem')
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $specification = new Specification($infoMock);
+
+        $this->assertSame($specification, $specification->setPath('/path', $pathItemMock));
+        $this->assertAttributeSame(array('/path' => $pathItemMock), 'paths', $specification);
+    }
+
+    /**
      * Tests if Specification::create returns a new Specification instance and sets the instance properties.
      */
     public function testCreate()

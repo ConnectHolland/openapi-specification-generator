@@ -63,6 +63,13 @@ class Specification
     private $produces = array();
 
     /**
+     * The available paths and operations for the API.
+     *
+     * @var Path[]
+     */
+    private $paths = array();
+
+    /**
      * Constructs a new Specification instance.
      *
      * @param Info $info The metadata about the API.
@@ -138,6 +145,21 @@ class Specification
     public function setProduces(array $produces)
     {
         $this->produces = $produces;
+
+        return $this;
+    }
+
+    /**
+     * Adds a path endpoint to the specification.
+     *
+     * @param string $path     A relative path to an individual endpoint. The field name MUST begin with a slash.
+     * @param Path   $pathItem A PathItem instance containing the operations available on the path.
+     *
+     * @return Specification
+     */
+    public function setPath($path, PathItem $pathItem)
+    {
+        $this->paths[$path] = $pathItem;
 
         return $this;
     }
