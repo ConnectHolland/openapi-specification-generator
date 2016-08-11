@@ -58,4 +58,38 @@ class AbstractParameterTest extends PHPUnit_Framework_TestCase
         $this->assertSame($parameter, $parameter->setRequired(true));
         $this->assertAttributeSame(true, 'required', $parameter);
     }
+
+    /**
+     * Tests if AbstractParameter::isRequired returns false by default.
+     */
+    public function testIsRequiredReturnsFalseByDefault()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+                ->getMock();
+
+        $parameter = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\AbstractParameter')
+                ->setConstructorArgs(array('parameterName', $schemaMock))
+                ->getMockForAbstractClass();
+
+        $this->assertFalse($parameter->isRequired());
+    }
+
+    /**
+     * Tests if AbstractParameter::isRequired returns true.
+     *
+     * @depends testSetRequired
+     */
+    public function testIsRequiredReturnsTrue()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+                ->getMock();
+
+        $parameter = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\AbstractParameter')
+                ->setConstructorArgs(array('parameterName', $schemaMock))
+                ->getMockForAbstractClass();
+
+        $parameter->setRequired(true);
+
+        $this->assertTrue($parameter->isRequired());
+    }
 }

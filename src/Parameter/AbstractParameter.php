@@ -19,18 +19,18 @@ abstract class AbstractParameter implements ParameterInterface
     protected $in;
 
     /**
+     * The schema element instance containing the location specific parameters.
+     *
+     * @var SchemaElementInterface
+     */
+    protected $schema;
+
+    /**
      * The name of the parameter.
      *
      * @var string
      */
     private $name;
-
-    /**
-     * The schema element instance containing the location specific parameters.
-     *
-     * @var SchemaElementInterface
-     */
-    private $schema;
 
     /**
      * The brief description of the parameter.
@@ -59,6 +59,14 @@ abstract class AbstractParameter implements ParameterInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function isRequired()
+    {
+        return $this->required === true;
+    }
+
+    /**
      * Sets the brief description of the parameter.
      *
      * @param string $description
@@ -84,5 +92,39 @@ abstract class AbstractParameter implements ParameterInterface
         $this->required = $required;
 
         return $this;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $parameter = array(
+            'name' => $this->name,
+            'in' => $this->in,
+        );
+        if (isset($this->description)) {
+            $parameter['description'] = $this->description;
+        }
+        if ($this->isRequired()) {
+            $parameter['required'] = true;
+        }
+
+        return $parameter;
+    }
+
+    /**
+     * Returns a new AbstractParameter instance.
+     *
+     * @param string                 $name
+     * @param SchemaElementInterface $schema
+     *
+     * @return static
+     */
+    public static function create($name, SchemaElementInterface $schema)
+    {
+        return new static($name, $schema);
     }
 }
