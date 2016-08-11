@@ -4,6 +4,7 @@ namespace ConnectHolland\OpenAPISpecificationGenerator\Test;
 
 use ConnectHolland\OpenAPISpecificationGenerator\Specification;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * SpecificationTest.
@@ -137,6 +138,53 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($specification, $specification->setDefinition('someObject', $schemaElementMock));
         $this->assertAttributeSame(array('someObject' => $schemaElementMock), 'definitions', $specification);
+    }
+
+    /**
+     * Tests if Specification::jsonSerialize returns the expected result.
+     */
+    public function testJsonSerialize()
+    {
+        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $infoMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('title' => 'API', 'version' => '1.0'));
+
+        $specification = new Specification($infoMock);
+
+        $expectedResult = array(
+            'swagger' => '2.0',
+            'info' => array(
+                'title' => 'API',
+                'version' => '1.0',
+            ),
+            'paths' => new stdClass(),
+        );
+
+        $this->assertEquals($expectedResult, $specification->jsonSerialize());
+    }
+
+    /**
+     * Tests if Specification::jsonSerialize returns the expected JSON encoded result through the json_encode function.
+     *
+     * @depends testJsonSerialize
+     */
+    public function testJsonSerializeThroughJsonEncode()
+    {
+        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $infoMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('title' => 'API', 'version' => '1.0'));
+
+        $specification = new Specification($infoMock);
+
+        $expectedResult = '{"swagger":"2.0","info":{"title":"API","version":"1.0"},"paths":{}}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($specification));
     }
 
     /**

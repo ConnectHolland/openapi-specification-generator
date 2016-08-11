@@ -2,12 +2,15 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Path;
 
+use JsonSerializable;
+use stdClass;
+
 /**
  * PathItem.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class PathItem
+class PathItem implements JsonSerializable
 {
     /**
      * The reference to an external definition.
@@ -196,6 +199,39 @@ class PathItem
         $this->parameters = $parameters;
 
         return $this;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array|stdClass
+     */
+    public function jsonSerialize()
+    {
+        $pathItem = array();
+        if (isset($this->reference)) { // @todo Change to reference object?
+            $pathItem['$ref'] = '#/definitions/'.$this->reference;
+        }
+
+        $operations = array('get', 'put', 'post', 'delete', 'options', 'head', 'patch');
+        foreach ($operations as $operation) {
+            if (isset($this->$operation)) {
+                $pathItem[$operation] = $this->$operation->jsonSerialize();
+            }
+        }
+
+        if (empty($this->parameters) === false) {
+            $pathItem['parameters'] = array();
+            foreach ($this->parameters as $parameter) {
+                $pathItem['parameters'][] = $parameter->jsonSerialize();
+            }
+        }
+
+        if (empty($pathItem)) {
+            $pathItem = new stdClass();
+        }
+
+        return $pathItem;
     }
 
     /**

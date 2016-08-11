@@ -24,6 +24,33 @@ class LicenseTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if License::jsonSerialize returns the expected result.
+     */
+    public function testJsonSerialize()
+    {
+        $license = new License('MIT', 'http://example.com/license/');
+
+        $expectedResult = array(
+            'name' => 'MIT',
+            'url' => 'http://example.com/license/',
+        );
+
+        $this->assertSame($expectedResult, $license->jsonSerialize());
+    }
+
+    /**
+     * Tests if License::jsonSerialize returns the expected JSON encoded result through the json_encode function.
+     */
+    public function testJsonSerializeThroughJsonEncode()
+    {
+        $license = new License('MIT', 'http://example.com/license/');
+
+        $expectedResult = '{"name":"MIT","url":"http:\/\/example.com\/license\/"}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($license));
+    }
+
+    /**
      * Tests if License::create returns a new License instance and sets the instance properties.
      */
     public function testCreate()

@@ -2,12 +2,14 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Path\Response;
 
+use JsonSerializable;
+
 /**
  * ResponseInterface.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-interface ResponseInterface
+interface ResponseInterface extends JsonSerializable
 {
     const HTTP_CONTINUE = 100;
     const HTTP_SWITCHING_PROTOCOLS = 101;

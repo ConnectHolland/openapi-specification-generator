@@ -65,6 +65,23 @@ class Response implements ResponseInterface
     }
 
     /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $response = array(
+            'description' => $this->description,
+        );
+        if (isset($this->schema)) {
+            $response['schema'] = $this->schema->jsonSerialize();
+        }
+
+        return $response;
+    }
+
+    /**
      * Returns a new Response instance.
      *
      * @param string $description A short description of the response.

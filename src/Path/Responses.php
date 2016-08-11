@@ -4,13 +4,15 @@ namespace ConnectHolland\OpenAPISpecificationGenerator\Path;
 
 use ConnectHolland\OpenAPISpecificationGenerator\Path\Response\ResponseInterface;
 use InvalidArgumentException;
+use JsonSerializable;
+use stdClass;
 
 /**
  * Responses.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class Responses
+class Responses implements JsonSerializable
 {
     /**
      * The array with response instances.
@@ -52,6 +54,24 @@ class Responses
         $this->responses[$httpStatusCode] = $response;
 
         return $this;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array|stdClass
+     */
+    public function jsonSerialize()
+    {
+        $responses = array();
+        foreach ($this->responses as $httpStatusCode => $response) {
+            $responses[$httpStatusCode] = $response->jsonSerialize();
+        }
+        if (empty($responses)) {
+            $responses = new stdClass();
+        }
+
+        return $responses;
     }
 
     /**

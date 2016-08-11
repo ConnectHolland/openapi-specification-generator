@@ -2,12 +2,15 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Info;
 
+use JsonSerializable;
+use stdClass;
+
 /**
  * Contact.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class Contact
+class Contact implements JsonSerializable
 {
     /**
      * The identifying name of the contact person/organization.
@@ -42,6 +45,30 @@ class Contact
         $this->name = $name;
         $this->url = $url;
         $this->email = $email;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $contact = array();
+        if (isset($this->name)) {
+            $contact['name'] = $this->name;
+        }
+        if (isset($this->url)) {
+            $contact['url'] = $this->url;
+        }
+        if (isset($this->email)) {
+            $contact['email'] = $this->email;
+        }
+        if (empty($contact)) {
+            $contact = new stdClass();
+        }
+
+        return $contact;
     }
 
     /**

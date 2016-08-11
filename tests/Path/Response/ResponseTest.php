@@ -37,6 +37,49 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Response::jsonSerialize returns the expected result.
+     */
+    public function testJsonSerialize()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+                ->getMock();
+        $schemaMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('type' => 'string'));
+
+        $response = new Response('A description.');
+        $response->setSchema($schemaMock);
+
+        $expectedResult = array(
+            'description' => 'A description.',
+            'schema' => array(
+                'type' => 'string',
+            ),
+        );
+
+        $this->assertEquals($expectedResult, $response->jsonSerialize());
+    }
+
+    /**
+     * Tests if Response::jsonSerialize returns the expected JSON encoded result through the json_encode function.
+     */
+    public function testJsonSerializeThroughJsonEncode()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+                ->getMock();
+        $schemaMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('type' => 'string'));
+
+        $response = new Response('A description.');
+        $response->setSchema($schemaMock);
+
+        $expectedResult = '{"description":"A description.","schema":{"type":"string"}}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($response));
+    }
+
+    /**
      * Tests if Specification::create returns a new Specification instance and sets the instance properties.
      */
     public function testCreate()

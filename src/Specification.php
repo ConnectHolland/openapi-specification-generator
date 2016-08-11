@@ -5,13 +5,15 @@ namespace ConnectHolland\OpenAPISpecificationGenerator;
 use ConnectHolland\OpenAPISpecificationGenerator\Info\Info;
 use ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem;
 use ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface;
+use JsonSerializable;
+use stdClass;
 
 /**
  * Specification.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class Specification
+class Specification implements JsonSerializable
 {
     /**
      * Specifies the Swagger Specification version being used.
@@ -65,7 +67,7 @@ class Specification
     /**
      * The available paths and operations for the API.
      *
-     * @var Path[]
+     * @var PathItem[]
      */
     private $paths = array();
 
@@ -159,8 +161,8 @@ class Specification
     /**
      * Adds a path endpoint to the specification.
      *
-     * @param string $path     A relative path to an individual endpoint. The field name MUST begin with a slash.
-     * @param Path   $pathItem A PathItem instance containing the operations available on the path.
+     * @param string   $path     A relative path to an individual endpoint. The field name MUST begin with a slash.
+     * @param PathItem $pathItem A PathItem instance containing the operations available on the path.
      *
      * @return Specification
      */
@@ -184,6 +186,50 @@ class Specification
         $this->definitions[$definition] = $schema;
 
         return $this;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $specification = array();
+        $specification['swagger'] = $this->swagger;
+        $specification['info'] = $this->info->jsonSerialize();
+        if (isset($this->host)) {
+            $specification['host'] = $this->host;
+        }
+        if (isset($this->basePath)) {
+            $specification['basePath'] = $this->basePath;
+        }
+        if (empty($this->schemes) === false) {
+            $specification['schemes'] = $this->schemes;
+        }
+        if (empty($this->consumes) === false) {
+            $specification['consumes'] = $this->consumes;
+        }
+        if (empty($this->produces) === false) {
+            $specification['produces'] = $this->produces;
+        }
+
+        $specification['paths'] = array();
+        foreach ($this->paths as $path => $pathItem) {
+            $specification['paths'][$path] = $pathItem->jsonSerialize();
+        }
+        if (empty($specification['paths'])) {
+            $specification['paths'] = new stdClass();
+        }
+
+        if (empty($this->definitions) === false) {
+            $specification['definitions'] = array();
+            foreach ($this->definitions as $definition => $schema) {
+                $specification['definitions'][$definition] = $schema->jsonSerialize();
+            }
+        }
+
+        return $specification;
     }
 
     /**

@@ -2,12 +2,14 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Info;
 
+use JsonSerializable;
+
 /**
  * Info.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class Info
+class Info implements JsonSerializable
 {
     /**
      * The title of the application.
@@ -117,6 +119,33 @@ class Info
         $this->license = $license;
 
         return $this;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $info = array(
+            'title' => $this->title,
+            'version' => $this->version,
+        );
+        if (isset($this->description)) {
+            $info['description'] = $this->description;
+        }
+        if (isset($this->termsOfService)) {
+            $info['termsOfService'] = $this->termsOfService;
+        }
+        if (isset($this->contact)) {
+            $info['contact'] = $this->contact->jsonSerialize();
+        }
+        if (isset($this->license)) {
+            $info['license'] = $this->license->jsonSerialize();
+        }
+
+        return $info;
     }
 
     /**

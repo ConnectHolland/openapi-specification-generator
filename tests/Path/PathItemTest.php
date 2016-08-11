@@ -2,8 +2,10 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Test\Path;
 
+use ConnectHolland\OpenAPISpecificationGenerator\Path\Operation;
 use ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * PathItemTest.
@@ -140,6 +142,118 @@ class PathItemTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($pathItem, $pathItem->setParameters(array($parameterMock)));
         $this->assertAttributeSame(array($parameterMock), 'parameters', $pathItem);
+    }
+
+    /**
+     * Tests if PathItem::jsonSerialize returns the expected result.
+     */
+    public function testJsonSerialize()
+    {
+        $operationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Operation')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $operationMock->expects($this->exactly(7))
+                ->method('jsonSerialize')
+                ->willReturn(array('responses' => new stdClass()));
+
+        $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
+                ->getMock();
+        $parameterMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
+
+        $pathItem = new PathItem();
+        $pathItem->setReference('test-reference');
+        $pathItem->setGet($operationMock);
+        $pathItem->setPut($operationMock);
+        $pathItem->setPost($operationMock);
+        $pathItem->setDelete($operationMock);
+        $pathItem->setOptions($operationMock);
+        $pathItem->setHead($operationMock);
+        $pathItem->setPatch($operationMock);
+        $pathItem->setParameters(array($parameterMock));
+
+        $expectedResult = array(
+            '$ref' => '#/definitions/test-reference',
+            'get' => array(
+                'responses' => new stdClass(),
+            ),
+            'put' => array(
+                'responses' => new stdClass(),
+            ),
+            'post' => array(
+                'responses' => new stdClass(),
+            ),
+            'delete' => array(
+                'responses' => new stdClass(),
+            ),
+            'options' => array(
+                'responses' => new stdClass(),
+            ),
+            'head' => array(
+                'responses' => new stdClass(),
+            ),
+            'patch' => array(
+                'responses' => new stdClass(),
+            ),
+            'parameters' => array(
+                array(
+                    'name' => 'parameterName',
+                    'in' => 'body',
+                    'schema' => array(
+                        'type' => 'string'
+                    )
+                ),
+            ),
+        );
+
+        $this->assertEquals($expectedResult, $pathItem->jsonSerialize());
+    }
+
+    /**
+     * Tests if PathItem::jsonSerialize returns the expected JSON encoded result through the json_encode function.
+     */
+    public function testJsonSerializeThroughJsonEncode()
+    {
+        $operationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Operation')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $operationMock->expects($this->exactly(7))
+                ->method('jsonSerialize')
+                ->willReturn(array('responses' => new stdClass()));
+
+        $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
+                ->getMock();
+        $parameterMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
+
+        $pathItem = new PathItem();
+        $pathItem->setReference('test-reference');
+        $pathItem->setGet($operationMock);
+        $pathItem->setPut($operationMock);
+        $pathItem->setPost($operationMock);
+        $pathItem->setDelete($operationMock);
+        $pathItem->setOptions($operationMock);
+        $pathItem->setHead($operationMock);
+        $pathItem->setPatch($operationMock);
+        $pathItem->setParameters(array($parameterMock));
+
+        $expectedResult = '{"$ref":"#\/definitions\/test-reference","get":{"responses":{}},"put":{"responses":{}},"post":{"responses":{}},"delete":{"responses":{}},"options":{"responses":{}},"head":{"responses":{}},"patch":{"responses":{}},"parameters":[{"name":"parameterName","in":"body","schema":{"type":"string"}}]}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($pathItem));
+    }
+
+    /**
+     * Tests if PathItem::jsonSerialize returns the expected JSON encoded result through the json_encode function with empty properties.
+     */
+    public function testJsonSerializeThroughJsonEncodeWithEmptyProperties()
+    {
+        $pathItem = new PathItem();
+
+        $expectedResult = '{}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($pathItem));
     }
 
     /**

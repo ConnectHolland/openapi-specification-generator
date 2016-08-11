@@ -4,6 +4,7 @@ namespace ConnectHolland\OpenAPISpecificationGenerator\Test\Info;
 
 use ConnectHolland\OpenAPISpecificationGenerator\Info\Info;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * InfoTest.
@@ -73,6 +74,75 @@ class InfoTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($info, $info->setLicense($licenseMock));
         $this->assertAttributeSame($licenseMock, 'license', $info);
+    }
+
+    /**
+     * Tests if Info::jsonSerialize returns the expected result.
+     */
+    public function testJsonSerialize()
+    {
+        $contactMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Contact')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $contactMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(new stdClass());
+
+        $licenseMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\License')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $licenseMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('name' => 'MIT'));
+
+        $info = new Info('API', '1.0.0');
+        $info->setDescription('A description of the API.');
+        $info->setTermsOfService('http://swagger.io/terms/');
+        $info->setContact($contactMock);
+        $info->setLicense($licenseMock);
+
+        $expectedResult = array(
+            'title' => 'API',
+            'description' => 'A description of the API.',
+            'termsOfService' => 'http://swagger.io/terms/',
+            'contact' => new stdClass(),
+            'license' => array(
+                'name' => 'MIT',
+            ),
+            'version' => '1.0.0',
+        );
+
+        $this->assertEquals($expectedResult, $info->jsonSerialize());
+    }
+
+    /**
+     * Tests if Info::jsonSerialize returns the expected JSON encoded result through the json_encode function.
+     */
+    public function testJsonSerializeThroughJsonEncode()
+    {
+        $contactMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Contact')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $contactMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(new stdClass());
+
+        $licenseMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\License')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $licenseMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('name' => 'MIT'));
+
+        $info = new Info('API', '1.0.0');
+        $info->setDescription('A description of the API.');
+        $info->setTermsOfService('http://swagger.io/terms/');
+        $info->setContact($contactMock);
+        $info->setLicense($licenseMock);
+
+        $expectedResult = '{"title":"API","description":"A description of the API.","termsOfService":"http:\/\/swagger.io\/terms\/","contact":{},"license":{"name":"MIT"},"version":"1.0.0"}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($info));
     }
 
     /**

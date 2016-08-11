@@ -3,13 +3,14 @@
 namespace ConnectHolland\OpenAPISpecificationGenerator\Path;
 
 use ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface;
+use JsonSerializable;
 
 /**
  * Operation.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class Operation
+class Operation implements JsonSerializable
 {
     /**
      * The unique string used to identify the operation. The id MUST be unique among all operations described in the API.
@@ -103,6 +104,16 @@ class Operation
     public function __construct(Responses $responses)
     {
         $this->responses = $responses;
+    }
+
+    /**
+     * Returns true when this operation is marked as deprecated.
+     *
+     * @return bool
+     */
+    public function isDeprecated()
+    {
+        return $this->deprecated === true;
     }
 
     /**
@@ -229,6 +240,49 @@ class Operation
         $this->parameters[] = $parameter;
 
         return $this;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $operation = array();
+        if (isset($this->operationId)) {
+            $operation['operationId'] = $this->operationId;
+        }
+        if (isset($this->summary)) {
+            $operation['summary'] = $this->summary;
+        }
+        if (isset($this->description)) {
+            $operation['description'] = $this->description;
+        }
+        if (empty($this->consumes) === false) {
+            $operation['consumes'] = $this->consumes;
+        }
+        if (empty($this->produces) === false) {
+            $operation['produces'] = $this->produces;
+        }
+        if (empty($this->parameters) === false) {
+            $operation['parameters'] = array();
+            foreach ($this->parameters as $parameter) {
+                $operation['parameters'][] = $parameter->jsonSerialize();
+            }
+        }
+        $operation['responses'] = $this->responses->jsonSerialize();
+        if (empty($this->schemes) === false) {
+            $operation['schemes'] = $this->schemes;
+        }
+        if ($this->isDeprecated()) {
+            $operation['deprecated'] = true;
+        }
+        if (empty($this->tags) === false) {
+            $operation['tags'] = $this->tags;
+        }
+
+        return $operation;
     }
 
     /**

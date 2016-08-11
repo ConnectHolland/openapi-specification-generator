@@ -25,4 +25,28 @@ class ResponseReference implements ResponseInterface
     {
         $this->reference = $reference;
     }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return array(
+            '$ref' => '#/definitions/'.$this->reference,
+        );
+    }
+
+    /**
+     * Returns a new ResponseReference instance.
+     *
+     * @param string $reference A reference string.
+     *
+     * @return ResponseReference
+     */
+    public static function create($reference)
+    {
+        return new self($reference);
+    }
 }

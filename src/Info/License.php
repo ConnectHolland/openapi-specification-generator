@@ -2,12 +2,14 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Info;
 
+use JsonSerializable;
+
 /**
  * License.
  *
  * @author Niels Nijens <niels@connectholland.nl>
  */
-class License
+class License implements JsonSerializable
 {
     /**
      * The license name used for the API.
@@ -33,6 +35,23 @@ class License
     {
         $this->name = $name;
         $this->url = $url;
+    }
+
+    /**
+     * Returns the representation of this object for JSON encoding.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $contact = array(
+            'name' => $this->name,
+        );
+        if (isset($this->url)) {
+            $contact['url'] = $this->url;
+        }
+
+        return $contact;
     }
 
     /**

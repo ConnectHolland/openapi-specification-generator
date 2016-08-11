@@ -4,6 +4,7 @@ namespace ConnectHolland\OpenAPISpecificationGenerator\Test\Path;
 
 use ConnectHolland\OpenAPISpecificationGenerator\Path\Operation;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * OperationTest.
@@ -162,6 +163,93 @@ class OperationTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame($operation, $operation->addParameter($parameterMock));
         $this->assertAttributeSame(array($parameterMock), 'parameters', $operation);
+    }
+
+    /**
+     * Tests if Operation::jsonSerialize returns the expected result.
+     */
+    public function testJsonSerialize()
+    {
+        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $responsesMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(new stdClass());
+
+        $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
+                ->getMock();
+        $parameterMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
+
+        $operation = new Operation($responsesMock);
+        $operation->setOperationId('test-operation');
+        $operation->setSummary('A summary.');
+        $operation->setDescription('A description.');
+        $operation->setConsumes(array('application/json'));
+        $operation->setProduces(array('application/json'));
+        $operation->setSchemes(array('https'));
+        $operation->setTags(array('tag'));
+        $operation->setDeprecated(true);
+        $operation->addParameter($parameterMock);
+
+        $expectedResult = array(
+            'operationId' => 'test-operation',
+            'summary' => 'A summary.',
+            'description' => 'A description.',
+            'consumes' => array('application/json'),
+            'produces' => array('application/json'),
+            'parameters' => array(
+                array(
+                    'name' => 'parameterName',
+                    'in' => 'body',
+                    'schema' => array(
+                        'type' => 'string',
+                    ),
+                ),
+            ),
+            'responses' => new stdClass(),
+            'schemes' => array('https'),
+            'deprecated' => true,
+            'tags' => array('tag'),
+        );
+
+        $this->assertEquals($expectedResult, $operation->jsonSerialize());
+    }
+
+    /**
+     * Tests if Operation::jsonSerialize returns the expected JSON encoded result through the json_encode function.
+     */
+    public function testJsonSerializeThroughJsonEncode()
+    {
+        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $responsesMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(new stdClass());
+
+        $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
+                ->getMock();
+        $parameterMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
+
+        $operation = new Operation($responsesMock);
+        $operation->setOperationId('test-operation');
+        $operation->setSummary('A summary.');
+        $operation->setDescription('A description.');
+        $operation->setConsumes(array('application/json'));
+        $operation->setProduces(array('application/json'));
+        $operation->setSchemes(array('https'));
+        $operation->setTags(array('tag'));
+        $operation->setDeprecated(true);
+        $operation->addParameter($parameterMock);
+
+        $expectedResult = '{"operationId":"test-operation","summary":"A summary.","description":"A description.","consumes":["application\/json"],"produces":["application\/json"],"parameters":[{"name":"parameterName","in":"body","schema":{"type":"string"}}],"responses":{},"schemes":["https"],"deprecated":true,"tags":["tag"]}';
+
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($operation));
     }
 
     /**
