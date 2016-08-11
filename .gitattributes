@@ -1,0 +1,14 @@
+# Force Unix line-endings
+.gitattributes eol=lf
+.gitignore eol=lf
+*.dist eol=lf
+*.json eol=lf
+*.lock eol=lf
+*.md eol=lf
+*.php eol=lf
+
+# Remove all test and documentation files from releases with 'export-ignore'.
+/tests              export-ignore
+/.gitattributes     export-ignore
+/.gitignore         export-ignore
+/phpunit.xml.dist   export-ignore
