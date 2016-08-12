@@ -1,0 +1,63 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Echo",
+        "version": "1.0.0",
+        "description": "#### Echos back every URL, method, parameter and header\nFeel free to make a path or an operation and use **Try Operation** to test it. The echo server will\nrender back everything.\n"
+    },
+    "host": "mazimi-prod.apigee.net",
+    "basePath": "/echo",
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+        "/": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Echo GET"
+                    }
+                }
+            },
+            "post": {
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "formData",
+                        "description": "name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "year",
+                        "in": "formData",
+                        "description": "year",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Echo POST"
+                    }
+                }
+            }
+        },
+        "/test-path/{id}": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Echo test-path"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "description": "ID",
+                    "required": true,
+                    "type": "string"
+                }
+            ]
+        }
+    }
+}
