@@ -28,6 +28,10 @@ All required OpenAPI properties are added as constructor arguments, so you won't
 ### Basic usage
 The following example of the most minimal possible specification you can create.
 ``` php
+
+use ConnectHolland\OpenAPISpecificationGenerator\Info\Info;
+use ConnectHolland\OpenAPISpecificationGenerator\Specification;
+
 $info = Info::create('My awesome API', '1.0.0');
 
 $specification = Specification::create($info);
@@ -35,6 +39,10 @@ $specification = Specification::create($info);
 
 To turn the `Specification` instance into a JSON specification you can insert the instance into `json_encode`.
 ``` php
+
+use ConnectHolland\OpenAPISpecificationGenerator\Info\Info;
+use ConnectHolland\OpenAPISpecificationGenerator\Specification;
+
 $info = Info::create('My awesome API', '1.0.0');
 
 $specification = Specification::create($info);
@@ -60,6 +68,17 @@ Although the above API specification is valid, it's not very useful as it does n
 ### Echo API example
 The Echo API example is available within the [Swagger editor][link-swagger-editor]. The following code shows how to generate this example.
 ``` php
+
+use ConnectHolland\OpenAPISpecificationGenerator\Info\Info;
+use ConnectHolland\OpenAPISpecificationGenerator\Parameter\FormDataParameter;
+use ConnectHolland\OpenAPISpecificationGenerator\Parameter\PathParameter;
+use ConnectHolland\OpenAPISpecificationGenerator\Path\Operation;
+use ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem;
+use ConnectHolland\OpenAPISpecificationGenerator\Path\Response\Response;
+use ConnectHolland\OpenAPISpecificationGenerator\Path\Responses;
+use ConnectHolland\OpenAPISpecificationGenerator\Schema\Primitive\StringElement;
+use ConnectHolland\OpenAPISpecificationGenerator\Specification;
+
 $info = Info::create('Echo', '1.0.0')
     ->setDescription("#### Echos back every URL, method, parameter and header\nFeel free to make a path or an operation and use **Try Operation** to test it. The echo server will\nrender back everything.\n");
 
