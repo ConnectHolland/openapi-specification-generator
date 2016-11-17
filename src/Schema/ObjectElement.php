@@ -35,7 +35,7 @@ class ObjectElement extends AbstractElement
      *
      * @var bool
      */
-    private $additionalProperties = false;
+    private $additionalProperties;
 
     /**
      * {@inheritdoc}
@@ -114,9 +114,9 @@ class ObjectElement extends AbstractElement
         if (isset($this->maxProperties)) {
             $element['maxProperties'] = $this->maxProperties;
         }
-        if (empty($this->properties) === false) {
-            $requiredProperties = array();
 
+        $requiredProperties = array();
+        if (empty($this->properties) === false) {
             $element['properties'] = array();
             foreach ($this->properties as $name => $property) {
                 $element['properties'][$name] = $property->jsonSerialize();
@@ -125,10 +125,13 @@ class ObjectElement extends AbstractElement
                     $requiredProperties[] = $name;
                 }
             }
+        }
 
-            if (empty($requiredProperties) === false) {
-                $element['required'] = $requiredProperties;
-            }
+        if (empty($requiredProperties) === false) {
+            $element['required'] = $requiredProperties;
+        }
+        if (isset($this->additionalProperties)) {
+            $element['additionalProperties'] = $this->additionalProperties;
         }
 
         return $element;
