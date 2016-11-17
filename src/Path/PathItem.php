@@ -2,6 +2,7 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Path;
 
+use ConnectHolland\OpenAPISpecificationGenerator\Schema\ReferenceElement;
 use JsonSerializable;
 use stdClass;
 
@@ -15,7 +16,7 @@ class PathItem implements JsonSerializable
     /**
      * The reference to an external definition.
      *
-     * @var string
+     * @var ReferenceElement
      */
     private $reference;
 
@@ -78,11 +79,11 @@ class PathItem implements JsonSerializable
     /**
      * Sets a reference to an external definition.
      *
-     * @param string $reference The reference to an external definition.
+     * @param ReferenceElement $reference The reference to an external definition.
      *
      * @return PathItem
      */
-    public function setReference($reference)
+    public function setReference(ReferenceElement $reference)
     {
         $this->reference = $reference;
 
@@ -209,8 +210,8 @@ class PathItem implements JsonSerializable
     public function jsonSerialize()
     {
         $pathItem = array();
-        if (isset($this->reference)) { // @todo Change to reference object?
-            $pathItem['$ref'] = '#/definitions/'.$this->reference;
+        if ($this->reference instanceof ReferenceElement) {
+            $pathItem = $this->reference->jsonSerialize();
         }
 
         $operations = array('get', 'put', 'post', 'delete', 'options', 'head', 'patch');

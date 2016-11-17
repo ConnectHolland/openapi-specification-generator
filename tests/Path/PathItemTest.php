@@ -2,7 +2,6 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Test\Path;
 
-use ConnectHolland\OpenAPISpecificationGenerator\Path\Operation;
 use ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem;
 use PHPUnit_Framework_TestCase;
 use stdClass;
@@ -19,10 +18,14 @@ class PathItemTest extends PHPUnit_Framework_TestCase
      */
     public function testSetReference()
     {
+        $referenceElementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\ReferenceElement')
+                ->disableOriginalConstructor()
+                ->getMock();
+
         $pathItem = new PathItem();
 
-        $this->assertSame($pathItem, $pathItem->setReference('someObject'));
-        $this->assertAttributeSame('someObject', 'reference', $pathItem);
+        $this->assertSame($pathItem, $pathItem->setReference($referenceElementMock));
+        $this->assertAttributeSame($referenceElementMock, 'reference', $pathItem);
     }
 
     /**
@@ -149,6 +152,13 @@ class PathItemTest extends PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
+        $referenceElementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\ReferenceElement')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $referenceElementMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('$ref' => '#/definitions/test-reference'));
+
         $operationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Operation')
                 ->disableOriginalConstructor()
                 ->getMock();
@@ -163,7 +173,7 @@ class PathItemTest extends PHPUnit_Framework_TestCase
                 ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
 
         $pathItem = new PathItem();
-        $pathItem->setReference('test-reference');
+        $pathItem->setReference($referenceElementMock);
         $pathItem->setGet($operationMock);
         $pathItem->setPut($operationMock);
         $pathItem->setPost($operationMock);
@@ -215,6 +225,13 @@ class PathItemTest extends PHPUnit_Framework_TestCase
      */
     public function testJsonSerializeThroughJsonEncode()
     {
+        $referenceElementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\ReferenceElement')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $referenceElementMock->expects($this->once())
+                ->method('jsonSerialize')
+                ->willReturn(array('$ref' => '#/definitions/test-reference'));
+
         $operationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Operation')
                 ->disableOriginalConstructor()
                 ->getMock();
@@ -229,7 +246,7 @@ class PathItemTest extends PHPUnit_Framework_TestCase
                 ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
 
         $pathItem = new PathItem();
-        $pathItem->setReference('test-reference');
+        $pathItem->setReference($referenceElementMock);
         $pathItem->setGet($operationMock);
         $pathItem->setPut($operationMock);
         $pathItem->setPost($operationMock);
