@@ -73,9 +73,6 @@ abstract class AbstractExtendedParameter extends AbstractParameter
     {
         $parameter = parent::jsonSerialize();
         $parameter = array_merge($parameter, $this->schema->jsonSerialize());
-        if (isset($parameter['items'])) {
-            $parameter['items'] = current($parameter['items']);
-        }
         if ($this->allowEmptyValue === true) {
             $parameter['allowEmptyValue'] = true;
         }
