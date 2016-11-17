@@ -26,9 +26,9 @@ class ArrayElement extends AbstractElement
     /**
      * The items on the array element.
      *
-     * @var array
+     * @var SchemaElementInterface
      */
-    private $items = array();
+    private $items;
 
     /**
      * {@inheritdoc}
@@ -67,15 +67,15 @@ class ArrayElement extends AbstractElement
     }
 
     /**
-     * Adds an item to the array element.
+     * Sets an item to the array element.
      *
      * @param SchemaElementInterface $item
      *
      * @return ArrayElement
      */
-    public function addItem(SchemaElementInterface $item)
+    public function setItems(SchemaElementInterface $item)
     {
-        $this->items[] = $item;
+        $this->items = $item;
 
         return $this;
     }
@@ -92,9 +92,8 @@ class ArrayElement extends AbstractElement
         if (isset($this->maxItems)) {
             $element['maxItems'] = $this->maxItems;
         }
-        $element['items'] = array();
-        foreach ($this->items as $item) {
-            $element['items'][] = $item->jsonSerialize();
+        if ($this->items instanceof SchemaElementInterface) {
+            $element['items'] = $this->items->jsonSerialize();
         }
 
         return $element;

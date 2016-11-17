@@ -250,7 +250,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('An array of products')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('Product')
                                             )
                                     )
@@ -283,7 +283,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('An array of price estimates by product')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('PriceEstimate')
                                             )
                                     )
@@ -326,7 +326,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('An array of products')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('Product')
                                             )
                                     )
@@ -369,7 +369,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('Profile information for a user')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('Profile')
                                             )
                                     )
@@ -392,7 +392,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('History information for the given user')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('Activities')
                                             )
                                     )
@@ -496,7 +496,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                         ->setDescription('Total number of items available.')
                     )
                     ->addProperty('history', ArrayElement::create()
-                        ->addItem(ReferenceElement::create('Activity'))
+                        ->setItems(ReferenceElement::create('Activity'))
                         ->setDescription('Total number of items available.')
                     )
             );
@@ -600,7 +600,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('pet response')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('pet')
                                             )
                                     )
@@ -611,7 +611,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                     ->setProduces(array('application/json', 'application/xml', 'text/xml', 'text/html'))
                     ->addParameter(
                         QueryParameter::create('tags', ArrayElement::create()
-                                ->addItem(StringElement::create())
+                                ->setItems(StringElement::create())
                             )
                             ->setDescription('tags to filter by')
                     )
@@ -654,7 +654,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                                 Response::create('pet response')
                                     ->setSchema(
                                         ArrayElement::create()
-                                            ->addItem(
+                                            ->setItems(
                                                 ReferenceElement::create('pet')
                                             )
                                     )

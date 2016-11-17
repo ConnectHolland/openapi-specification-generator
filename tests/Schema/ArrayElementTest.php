@@ -35,17 +35,17 @@ class ArrayElementTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests if ArrayElement::addProperty sets the instance property and returns the ArrayElement instance.
+     * Tests if ArrayElement::setItems sets the instance property and returns the ArrayElement instance.
      */
-    public function testAddItem()
+    public function testSetItems()
     {
         $schemaElementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
                 ->getMock();
 
         $element = new ArrayElement();
 
-        $this->assertSame($element, $element->addItem($schemaElementMock));
-        $this->assertAttributeSame(array($schemaElementMock), 'items', $element);
+        $this->assertSame($element, $element->setItems($schemaElementMock));
+        $this->assertAttributeSame($schemaElementMock, 'items', $element);
     }
 
     /**
@@ -62,16 +62,14 @@ class ArrayElementTest extends PHPUnit_Framework_TestCase
         $element = new ArrayElement();
         $element->setMinItems(1)
                 ->setMaxItems(5)
-                ->addItem($schemaElementMock);
+                ->setItems($schemaElementMock);
 
         $expectedResult = array(
             'type' => 'array',
             'minItems' => 1,
             'maxItems' => 5,
             'items' => array(
-                array(
-                    'type' => 'string',
-                ),
+                'type' => 'string',
             ),
         );
 
@@ -92,7 +90,7 @@ class ArrayElementTest extends PHPUnit_Framework_TestCase
         $element = new ArrayElement();
         $element->setMinItems(1)
                 ->setMaxItems(5)
-                ->addItem($schemaElementMock);
+                ->setItems($schemaElementMock);
 
         $expectedResult = array(
             'minItems' => 1,
@@ -104,7 +102,7 @@ class ArrayElementTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $expectedResult = '{"type":"array","minItems":1,"maxItems":5,"items":[{"type":"string"}]}';
+        $expectedResult = '{"type":"array","minItems":1,"maxItems":5,"items":{"type":"string"}}';
 
         $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($element));
     }

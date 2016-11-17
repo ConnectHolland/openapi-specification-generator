@@ -67,11 +67,9 @@
                         "description": "pet response",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/pet"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/pet"
+                            }
                         }
                     }
                 }
@@ -140,11 +138,9 @@
                         "description": "pet response",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/pet"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/pet"
+                            }
                         }
                     }
                 }

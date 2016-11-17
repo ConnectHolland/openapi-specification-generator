@@ -47,11 +47,9 @@
                         "description": "An array of products",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/Product"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/Product"
+                            }
                         }
                     }
                 },
@@ -109,11 +107,9 @@
                         "description": "An array of price estimates by product",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/PriceEstimate"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/PriceEstimate"
+                            }
                         }
                     }
                 },
@@ -168,11 +164,9 @@
                         "description": "An array of products",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/Product"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/Product"
+                            }
                         }
                     }
                 },
@@ -196,11 +190,9 @@
                         "description": "Profile information for a user",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/Profile"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/Profile"
+                            }
                         }
                     }
                 },
@@ -240,11 +232,9 @@
                         "description": "History information for the given user",
                         "schema": {
                             "type": "array",
-                            "items": [
-                                {
-                                    "$ref": "#/definitions/Activities"
-                                }
-                            ]
+                            "items": {
+                                "$ref": "#/definitions/Activities"
+                            }
                         }
                     }
                 },
@@ -368,11 +358,9 @@
                 "history": {
                     "type": "array",
                     "description": "Total number of items available.",
-                    "items": [
-                        {
-                            "$ref": "#/definitions/Activity"
-                        }
-                    ]
+                    "items": {
+                        "$ref": "#/definitions/Activity"
+                    }
                 }
             }
         },

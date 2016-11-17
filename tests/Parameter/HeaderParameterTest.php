@@ -24,7 +24,7 @@ class HeaderParameterTest extends PHPUnit_Framework_TestCase
                 ->willReturn('array');
         $schemaMock->expects($this->once())
                 ->method('jsonSerialize')
-                ->willReturn(array('type' => 'array', 'items' => array(array('type' => 'string'))));
+                ->willReturn(array('type' => 'array', 'items' => array('type' => 'string')));
 
         $parameter = new HeaderParameter('parameterName', $schemaMock);
 
@@ -53,7 +53,7 @@ class HeaderParameterTest extends PHPUnit_Framework_TestCase
                 ->willReturn('array');
         $schemaMock->expects($this->once())
                 ->method('jsonSerialize')
-                ->willReturn(array('type' => 'array', 'items' => array(array('type' => 'string'))));
+                ->willReturn(array('type' => 'array', 'items' => array('type' => 'string')));
 
         $parameter = new HeaderParameter('parameterName', $schemaMock);
 
