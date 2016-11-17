@@ -89,6 +89,7 @@ class ObjectElementTest extends PHPUnit_Framework_TestCase
                 ),
             ),
             'required' => ['foo'],
+            'additionalProperties' => true,
         );
 
         $this->assertSame($expectedResult, $element->jsonSerialize());
@@ -114,7 +115,7 @@ class ObjectElementTest extends PHPUnit_Framework_TestCase
                 ->setAdditionalProperties(true)
                 ->addProperty('foo', $schemaElementMock);
 
-        $expectedResult = '{"type":"object","minProperties":1,"maxProperties":5,"properties":{"foo":{"type":"string"}},"required":["foo"]}';
+        $expectedResult = '{"type":"object","minProperties":1,"maxProperties":5,"properties":{"foo":{"type":"string"}},"required":["foo"],"additionalProperties":true}';
 
         $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($element));
     }
