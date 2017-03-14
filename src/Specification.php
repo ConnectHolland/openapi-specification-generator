@@ -79,6 +79,13 @@ class Specification implements JsonSerializable
     private $definitions = array();
 
     /**
+     * Additional external documentation.
+     *
+     * @var ExternalDocumentation
+     */
+    private $externalDocumentation;
+
+    /**
      * Constructs a new Specification instance.
      *
      * @param Info $info The metadata about the API.
@@ -189,6 +196,20 @@ class Specification implements JsonSerializable
     }
 
     /**
+     * Sets the additional external documentation.
+     *
+     * @param ExternalDocumentation $externalDocumentation
+     *
+     * @return Specification
+     */
+    public function setExternalDocumentation(ExternalDocumentation $externalDocumentation)
+    {
+        $this->externalDocumentation = $externalDocumentation;
+
+        return $this;
+    }
+
+    /**
      * Returns the representation of this object for JSON encoding.
      *
      * @return array
@@ -227,6 +248,10 @@ class Specification implements JsonSerializable
             foreach ($this->definitions as $definition => $schema) {
                 $specification['definitions'][$definition] = $schema->jsonSerialize();
             }
+        }
+
+        if (isset($this->externalDocumentation)) {
+            $specification['externalDocs'] = $this->externalDocumentation->jsonSerialize();
         }
 
         return $specification;

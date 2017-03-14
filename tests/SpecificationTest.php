@@ -152,6 +152,21 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Specification::setExternalDocumentation sets the ExternalDocumentation instance on instance property and returns the Specification instance.
+     */
+    public function testSetExternalDocumentation()
+    {
+        $externalDocumentationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\ExternalDocumentation')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $specification = $this->specification->setExternalDocumentation($externalDocumentationMock);
+
+        $this->assertSame($this->specification, $specification);
+        $this->assertAttributeSame($externalDocumentationMock, 'externalDocumentation', $specification);
+    }
+
+    /**
      * Tests if Specification::jsonSerialize returns the expected result.
      */
     public function testJsonSerialize()
@@ -167,6 +182,39 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                 'version' => '1.0',
             ),
             'paths' => new stdClass(),
+        );
+
+        $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
+    }
+
+    /**
+     * Tests if Specification::jsonSerialize with ExternalDocumentation instance added returns the expected result.
+     */
+    public function testJsonSerializeWithExternalDocumentation()
+    {
+        $this->infoMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('title' => 'API', 'version' => '1.0'));
+
+        $externalDocumentationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\ExternalDocumentation')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $externalDocumentationMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('url' => 'https://documentation.connectholland.nl'));
+
+        $this->specification->setExternalDocumentation($externalDocumentationMock);
+
+        $expectedResult = array(
+            'swagger' => '2.0',
+            'info' => array(
+                'title' => 'API',
+                'version' => '1.0',
+            ),
+            'paths' => new stdClass(),
+            'externalDocs' => array(
+                'url' => 'https://documentation.connectholland.nl',
+            ),
         );
 
         $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
