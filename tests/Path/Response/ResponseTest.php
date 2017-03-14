@@ -64,6 +64,20 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Response::addExample adds the Example instance to the examples instance property and returns the Response instance.
+     */
+    public function testAddExample()
+    {
+        $exampleMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\ExampleInterface')
+            ->getMock();
+
+        $response = $this->response->addExample($exampleMock);
+
+        $this->assertSame($this->response, $response);
+        $this->assertAttributeSame(array($exampleMock), 'examples', $this->response);
+    }
+
+    /**
      * Tests if Response::jsonSerialize returns the expected result.
      *
      * @depends testSetSchema
@@ -127,6 +141,52 @@ class ResponseTest extends PHPUnit_Framework_TestCase
                 'X-Test-Header' => array(
                     'description' => 'The header description.',
                     'type' => 'string',
+                ),
+            ),
+        );
+
+        $this->assertEquals($expectedResult, $this->response->jsonSerialize());
+    }
+
+    /**
+     * Tests if Response::jsonSerialize returns the expected result with an example set.
+     *
+     * @depends testJsonSerialize
+     */
+    public function testJsonSerializeWithExamples()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+            ->getMock();
+        $schemaMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'string'));
+
+        $exampleMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\ExampleInterface')
+            ->getMock();
+        $exampleMock->expects($this->once())
+            ->method('getMimetype')
+            ->willReturn('application/json');
+        $exampleMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(
+                array(
+                    'foo' => 'bar',
+                    'baz' => 'qux',
+                )
+            );
+
+        $this->response->setSchema($schemaMock);
+        $this->response->addExample($exampleMock);
+
+        $expectedResult = array(
+            'description' => 'A description.',
+            'schema' => array(
+                'type' => 'string',
+            ),
+            'examples' => array(
+                'application/json' => array(
+                    'foo' => 'bar',
+                    'baz' => 'qux',
                 ),
             ),
         );
