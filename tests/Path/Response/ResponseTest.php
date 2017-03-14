@@ -50,6 +50,20 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Response::addHeader adds the Header instance to the headers instance property and returns the Response instance.
+     */
+    public function testAddHeader()
+    {
+        $headerMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\HeaderInterface')
+            ->getMock();
+
+        $response = $this->response->addHeader($headerMock);
+
+        $this->assertSame($this->response, $response);
+        $this->assertAttributeSame(array($headerMock), 'headers', $this->response);
+    }
+
+    /**
      * Tests if Response::jsonSerialize returns the expected result.
      *
      * @depends testSetSchema
@@ -68,6 +82,52 @@ class ResponseTest extends PHPUnit_Framework_TestCase
             'description' => 'A description.',
             'schema' => array(
                 'type' => 'string',
+            ),
+        );
+
+        $this->assertEquals($expectedResult, $this->response->jsonSerialize());
+    }
+
+    /**
+     * Tests if Response::jsonSerialize returns the expected result with a header set.
+     *
+     * @depends testJsonSerialize
+     */
+    public function testJsonSerializeWithHeaders()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+            ->getMock();
+        $schemaMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'string'));
+
+        $headerMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\HeaderInterface')
+            ->getMock();
+        $headerMock->expects($this->once())
+            ->method('getName')
+            ->willReturn('X-Test-Header');
+        $headerMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(
+                array(
+                    'description' => 'The header description.',
+                    'type' => 'string',
+                )
+            );
+
+        $this->response->setSchema($schemaMock);
+        $this->response->addHeader($headerMock);
+
+        $expectedResult = array(
+            'description' => 'A description.',
+            'schema' => array(
+                'type' => 'string',
+            ),
+            'headers' => array(
+                'X-Test-Header' => array(
+                    'description' => 'The header description.',
+                    'type' => 'string',
+                ),
             ),
         );
 

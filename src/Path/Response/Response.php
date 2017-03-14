@@ -29,7 +29,7 @@ class Response implements ResponseInterface
     /**
      * The list of headers that are sent with the response.
      *
-     * @var Header[]
+     * @var HeaderInterface[]
      */
     private $headers = array();
 
@@ -43,7 +43,7 @@ class Response implements ResponseInterface
     /**
      * Constructs a new Response instance.
      *
-     * @param string $description A short description of the response.
+     * @param string $description a short description of the response
      */
     public function __construct($description)
     {
@@ -53,13 +53,27 @@ class Response implements ResponseInterface
     /**
      * Sets the definition of the response structure.
      *
-     * @param SchemaElementInterface $schema A definition of the response structure.
+     * @param SchemaElementInterface $schema a definition of the response structure
      *
      * @return Response
      */
     public function setSchema(SchemaElementInterface $schema)
     {
         $this->schema = $schema;
+
+        return $this;
+    }
+
+    /**
+     * Adds a header to the list of headers that are sent with the response.
+     *
+     * @param HeaderInterface $header
+     *
+     * @return Response
+     */
+    public function addHeader(HeaderInterface $header)
+    {
+        $this->headers[] = $header;
 
         return $this;
     }
@@ -77,6 +91,12 @@ class Response implements ResponseInterface
         if (isset($this->schema)) {
             $response['schema'] = $this->schema->jsonSerialize();
         }
+        if (empty($this->headers) === false) {
+            $response['headers'] = array();
+            foreach ($this->headers as $header) {
+                $response['headers'][$header->getName()] = $header->jsonSerialize();
+            }
+        }
 
         return $response;
     }
@@ -84,7 +104,7 @@ class Response implements ResponseInterface
     /**
      * Returns a new Response instance.
      *
-     * @param string $description A short description of the response.
+     * @param string $description a short description of the response
      *
      * @return Response
      */
