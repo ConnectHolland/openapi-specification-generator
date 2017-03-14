@@ -83,6 +83,21 @@ class OperationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Operation::setExternalDocumentation sets the instance property and returns the Operation instance.
+     */
+    public function testSetExternalDocumentation()
+    {
+        $externalDocumentationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\ExternalDocumentation')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $operation = $this->operation->setExternalDocumentation($externalDocumentationMock);
+
+        $this->assertSame($this->operation, $operation);
+        $this->assertAttributeSame($externalDocumentationMock, 'externalDocumentation', $operation);
+    }
+
+    /**
      * Tests if Operation::setConsumes sets the instance property and returns the Operation instance.
      */
     public function testSetConsumes()
@@ -166,6 +181,13 @@ class OperationTest extends PHPUnit_Framework_TestCase
             ->method('jsonSerialize')
             ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
 
+        $externalDocumentationMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\ExternalDocumentation')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $externalDocumentationMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('url' => 'https://documentation.connectholland.nl'));
+
         $this->operation->setOperationId('test-operation');
         $this->operation->setSummary('A summary.');
         $this->operation->setDescription('A description.');
@@ -175,11 +197,15 @@ class OperationTest extends PHPUnit_Framework_TestCase
         $this->operation->setTags(array('tag'));
         $this->operation->setDeprecated(true);
         $this->operation->addParameter($parameterMock);
+        $this->operation->setExternalDocumentation($externalDocumentationMock);
 
         $expectedResult = array(
             'operationId' => 'test-operation',
             'summary' => 'A summary.',
             'description' => 'A description.',
+            'externalDocs' => array(
+                'url' => 'https://documentation.connectholland.nl',
+            ),
             'consumes' => array('application/json'),
             'produces' => array('application/json'),
             'parameters' => array(
