@@ -36,7 +36,7 @@ class Response implements ResponseInterface
     /**
      * The examples for operation responses.
      *
-     * @var array
+     * @var ExampleInterface[]
      */
     private $examples = array();
 
@@ -79,6 +79,20 @@ class Response implements ResponseInterface
     }
 
     /**
+     * Adds an example for operation responses.
+     *
+     * @param ExampleInterface $example
+     *
+     * @return Response
+     */
+    public function addExample(ExampleInterface $example)
+    {
+        $this->examples[] = $example;
+
+        return $this;
+    }
+
+    /**
      * Returns the representation of this object for JSON encoding.
      *
      * @return array
@@ -95,6 +109,12 @@ class Response implements ResponseInterface
             $response['headers'] = array();
             foreach ($this->headers as $header) {
                 $response['headers'][$header->getName()] = $header->jsonSerialize();
+            }
+        }
+        if (empty($this->examples) === false) {
+            $response['examples'] = array();
+            foreach ($this->examples as $example) {
+                $response['examples'][$example->getMimetype()] = $example->jsonSerialize();
             }
         }
 
