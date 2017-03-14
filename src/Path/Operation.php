@@ -2,6 +2,7 @@
 
 namespace ConnectHolland\OpenAPISpecificationGenerator\Path;
 
+use ConnectHolland\OpenAPISpecificationGenerator\ExternalDocumentation;
 use ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface;
 use JsonSerializable;
 
@@ -159,6 +160,20 @@ class Operation implements JsonSerializable
     }
 
     /**
+     * Sets additional external documentation for this operation.
+     *
+     * @param ExternalDocumentation $externalDocumentation additional external documentation for this operation
+     *
+     * @return Operation
+     */
+    public function setExternalDocumentation(ExternalDocumentation $externalDocumentation)
+    {
+        $this->externalDocumentation = $externalDocumentation;
+
+        return $this;
+    }
+
+    /**
      * Sets the list of MIME types the operation can consume.
      *
      * @param array $consumes
@@ -203,7 +218,7 @@ class Operation implements JsonSerializable
     /**
      * Sets the list of tags for API documentation control.
      *
-     * @param array $tags A list of tags for API documentation control.
+     * @param array $tags a list of tags for API documentation control
      *
      * @return Operation
      */
@@ -258,6 +273,9 @@ class Operation implements JsonSerializable
         }
         if (isset($this->description)) {
             $operation['description'] = $this->description;
+        }
+        if (isset($this->externalDocumentation)) {
+            $operation['externalDocs'] = $this->externalDocumentation->jsonSerialize();
         }
         if (empty($this->consumes) === false) {
             $operation['consumes'] = $this->consumes;
