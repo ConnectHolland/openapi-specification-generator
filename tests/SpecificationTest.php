@@ -254,7 +254,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     /**
      * Tests if Specification::jsonSerialize returns the expected JSON encoded result through the json_encode function with the Uber API specification example.
      *
-     * @link http://editor.swagger.io/ The editor containing the specification example
+     * @see http://editor.swagger.io/ The editor containing the specification example
      *
      * @depends testJsonSerializeThroughJsonEncode
      */
@@ -566,7 +566,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     /**
      * Tests if Specification::jsonSerialize returns the expected JSON encoded result through the json_encode function with the Echo specification example.
      *
-     * @link http://editor.swagger.io/ The editor containing the specification example
+     * @see http://editor.swagger.io/ The editor containing the specification example
      *
      * @depends testJsonSerializeThroughJsonEncode
      */
@@ -627,7 +627,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     /**
      * Tests if Specification::jsonSerialize returns the expected JSON encoded result through the json_encode function with the Petstore (Simple) specification example.
      *
-     * @link http://editor.swagger.io/ The editor containing the specification example
+     * @see http://editor.swagger.io/ The editor containing the specification example
      *
      * @depends testJsonSerializeThroughJsonEncode
      */

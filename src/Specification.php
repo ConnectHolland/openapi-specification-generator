@@ -88,7 +88,7 @@ class Specification implements JsonSerializable
     /**
      * Constructs a new Specification instance.
      *
-     * @param Info $info The metadata about the API.
+     * @param Info $info the metadata about the API
      */
     public function __construct(Info $info)
     {
@@ -98,7 +98,7 @@ class Specification implements JsonSerializable
     /**
      * Sets the host (name or ip) serving the API.
      *
-     * @param string $host The host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.
+     * @param string $host the host (name or ip) serving the API. This MUST be the host only and does not include the scheme nor sub-paths. It MAY include a port.
      *
      * @return Specification
      */
@@ -112,7 +112,7 @@ class Specification implements JsonSerializable
     /**
      * Sets the base path on which the API is served.
      *
-     * @param string $basePath The base path on which the API is served, which is relative to the host.
+     * @param string $basePath the base path on which the API is served, which is relative to the host
      *
      * @return Specification
      */
@@ -126,7 +126,7 @@ class Specification implements JsonSerializable
     /**
      * Sets the transfer protocol of the API.
      *
-     * @param array $schemes The transfer protocol of the API. Values MUST be from the list: "http", "https", "ws", "wss".
+     * @param array $schemes the transfer protocol of the API. Values MUST be from the list: "http", "https", "ws", "wss".
      *
      * @return Specification
      */
@@ -140,7 +140,7 @@ class Specification implements JsonSerializable
     /**
      * Sets the list of MIME types the APIs can consume.
      *
-     * @param array $consumes A list of MIME types the APIs can consume.
+     * @param array $consumes a list of MIME types the APIs can consume
      *
      * @return Specification
      */
@@ -154,7 +154,7 @@ class Specification implements JsonSerializable
     /**
      * Sets the list of MIME types the APIs can produce.
      *
-     * @param array $produces A list of MIME types the APIs can produce.
+     * @param array $produces a list of MIME types the APIs can produce
      *
      * @return Specification
      */
@@ -168,8 +168,8 @@ class Specification implements JsonSerializable
     /**
      * Adds a path endpoint to the specification.
      *
-     * @param string   $path     A relative path to an individual endpoint. The field name MUST begin with a slash.
-     * @param PathItem $pathItem A PathItem instance containing the operations available on the path.
+     * @param string   $path     a relative path to an individual endpoint. The field name MUST begin with a slash.
+     * @param PathItem $pathItem a PathItem instance containing the operations available on the path
      *
      * @return Specification
      */
@@ -183,8 +183,8 @@ class Specification implements JsonSerializable
     /**
      * Adds a single definition.
      *
-     * @param string                 $definition The name of the definition.
-     * @param SchemaElementInterface $schema     A single definition, mapping the "name" to the schema it defines.
+     * @param string                 $definition the name of the definition
+     * @param SchemaElementInterface $schema     a single definition, mapping the "name" to the schema it defines
      *
      * @return Specification
      */

@@ -218,7 +218,7 @@ class Operation implements JsonSerializable
     /**
      * Sets the list of tags for API documentation control.
      *
-     * @param array $tags A list of tags for API documentation control.
+     * @param array $tags a list of tags for API documentation control
      *
      * @return Operation
      */
