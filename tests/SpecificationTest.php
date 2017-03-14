@@ -32,17 +32,39 @@ use stdClass;
 class SpecificationTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * The Specification instance being tested.
+     *
+     * @var Specification
+     */
+    private $specification;
+
+    /**
+     * The Info instance mock for testing.
+     *
+     * @var Info
+     */
+    private $infoMock;
+
+    /**
+     * Creates a Specification instance for testing.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->specification = new Specification($this->infoMock);
+    }
+
+    /**
      * Tests if constructing a new Specification instance sets the instance properties.
      */
     public function testConstruct()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
-
-        $specification = new Specification($infoMock);
-
-        $this->assertAttributeSame($infoMock, 'info', $specification);
+        $this->assertAttributeSame($this->infoMock, 'info', $this->specification);
     }
 
     /**
@@ -50,13 +72,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetHost()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $specification = $this->specification->setHost('api.example.com');
 
-        $specification = new Specification($infoMock);
-
-        $this->assertSame($specification, $specification->setHost('api.example.com'));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame('api.example.com', 'host', $specification);
     }
 
@@ -65,13 +83,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetBasePath()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $specification = $this->specification->setBasePath('/awesome/api');
 
-        $specification = new Specification($infoMock);
-
-        $this->assertSame($specification, $specification->setBasePath('/awesome/api'));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame('/awesome/api', 'basePath', $specification);
     }
 
@@ -80,13 +94,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetSchemes()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $specification = $this->specification->setSchemes(array('https'));
 
-        $specification = new Specification($infoMock);
-
-        $this->assertSame($specification, $specification->setSchemes(array('https')));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame(array('https'), 'schemes', $specification);
     }
 
@@ -95,13 +105,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetConsumes()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $specification = $this->specification->setConsumes(array('application/json'));
 
-        $specification = new Specification($infoMock);
-
-        $this->assertSame($specification, $specification->setConsumes(array('application/json')));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame(array('application/json'), 'consumes', $specification);
     }
 
@@ -110,13 +116,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetProduces()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $specification = $this->specification->setProduces(array('application/json'));
 
-        $specification = new Specification($infoMock);
-
-        $this->assertSame($specification, $specification->setProduces(array('application/json')));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame(array('application/json'), 'produces', $specification);
     }
 
@@ -125,17 +127,13 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetPath()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
-
         $pathItemMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $specification = new Specification($infoMock);
+        $specification = $this->specification->setPath('/path', $pathItemMock);
 
-        $this->assertSame($specification, $specification->setPath('/path', $pathItemMock));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame(array('/path' => $pathItemMock), 'paths', $specification);
     }
 
@@ -144,17 +142,12 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetDefinition()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
-
         $schemaElementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->getMock();
 
-        $specification = new Specification($infoMock);
+        $specification = $this->specification->setDefinition('someObject', $schemaElementMock);
 
-        $this->assertSame($specification, $specification->setDefinition('someObject', $schemaElementMock));
+        $this->assertSame($this->specification, $specification);
         $this->assertAttributeSame(array('someObject' => $schemaElementMock), 'definitions', $specification);
     }
 
@@ -163,14 +156,9 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $infoMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(array('title' => 'API', 'version' => '1.0'));
-
-        $specification = new Specification($infoMock);
+        $this->infoMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('title' => 'API', 'version' => '1.0'));
 
         $expectedResult = array(
             'swagger' => '2.0',
@@ -181,7 +169,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
             'paths' => new stdClass(),
         );
 
-        $this->assertEquals($expectedResult, $specification->jsonSerialize());
+        $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
     }
 
     /**
@@ -191,18 +179,13 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
      */
     public function testJsonSerializeThroughJsonEncode()
     {
-        $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $infoMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(array('title' => 'API', 'version' => '1.0'));
-
-        $specification = new Specification($infoMock);
+        $this->infoMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('title' => 'API', 'version' => '1.0'));
 
         $expectedResult = '{"swagger":"2.0","info":{"title":"API","version":"1.0"},"paths":{}}';
 
-        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($specification));
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($this->specification));
     }
 
     /**
@@ -211,8 +194,8 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $infoMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Info\Info')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $specification = Specification::create($infoMock);
 
@@ -230,15 +213,17 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     public function testJsonSerializeThroughJsonEncodeWithUberAPISpecificationExample()
     {
         $info = Info::create('Uber API', '1.0.0')
-                ->setDescription('Move your app forward with the Uber API');
+            ->setDescription('Move your app forward with the Uber API');
 
         $specification = Specification::create($info)
-                ->setHost('api.uber.com')
-                ->setSchemes(array('https'))
-                ->setBasePath('/v1')
-                ->setProduces(array('application/json'));
+            ->setHost('api.uber.com')
+            ->setSchemes(array('https'))
+            ->setBasePath('/v1')
+            ->setProduces(array('application/json'));
 
-        $specification->setPath('/products', PathItem::create()
+        $specification->setPath(
+            '/products',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -269,9 +254,12 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                             ->setRequired(true)
                     )
                     ->setTags(array('Products'))
-                ));
+                )
+        );
 
-        $specification->setPath('/estimates/price', PathItem::create()
+        $specification->setPath(
+            '/estimates/price',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -312,9 +300,12 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                             ->setRequired(true)
                     )
                     ->setTags(array('Estimates'))
-                ));
+                )
+        );
 
-        $specification->setPath('/estimates/time', PathItem::create()
+        $specification->setPath(
+            '/estimates/time',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -355,9 +346,12 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                             ->setDescription('Unique identifier representing a specific product for a given latitude & longitude.')
                     )
                     ->setTags(array('Estimates'))
-                ));
+                )
+        );
 
-        $specification->setPath('/me', PathItem::create()
+        $specification->setPath(
+            '/me',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -378,9 +372,12 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                     ->setSummary('User Profile')
                     ->setDescription('The User Profile endpoint returns information about the Uber user that has authorized with the application.')
                     ->setTags(array('User'))
-                ));
+                )
+        );
 
-        $specification->setPath('/history', PathItem::create()
+        $specification->setPath(
+            '/history',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -409,104 +406,111 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                             ->setDescription('Number of items to retrieve. Default is 5, maximum is 100.')
                     )
                     ->setTags(array('User'))
-                ));
+                )
+        );
 
-        $specification->setDefinition('Product',
-                ObjectElement::create()
-                    ->addProperty('product_id', StringElement::create()
-                        ->setDescription('Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.')
-                    )
-                    ->addProperty('description', StringElement::create()
-                        ->setDescription('Description of product.')
-                    )
-                    ->addProperty('display_name', StringElement::create()
-                        ->setDescription('Display name of product.')
-                    )
-                    ->addProperty('capacity', StringElement::create()
-                        ->setDescription('Capacity of product. For example, 4 people.')
-                    )
-                    ->addProperty('image', StringElement::create()
-                        ->setDescription('Image URL representing the product.')
-                    )
-            );
+        $specification->setDefinition(
+            'Product',
+            ObjectElement::create()
+                ->addProperty('product_id', StringElement::create()
+                    ->setDescription('Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.')
+                )
+                ->addProperty('description', StringElement::create()
+                    ->setDescription('Description of product.')
+                )
+                ->addProperty('display_name', StringElement::create()
+                    ->setDescription('Display name of product.')
+                )
+                ->addProperty('capacity', StringElement::create()
+                    ->setDescription('Capacity of product. For example, 4 people.')
+                )
+                ->addProperty('image', StringElement::create()
+                    ->setDescription('Image URL representing the product.')
+                )
+        );
 
-        $specification->setDefinition('PriceEstimate',
-                ObjectElement::create()
-                    ->addProperty('product_id', StringElement::create()
-                        ->setDescription('Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.')
-                    )
-                    ->addProperty('currency_code', StringElement::create()
-                        ->setDescription('[ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code.')
-                    )
-                    ->addProperty('display_name', StringElement::create()
-                        ->setDescription('Display name of product.')
-                    )
-                    ->addProperty('estimate', StringElement::create()
-                        ->setDescription('Formatted string of estimate in local currency of the start location. Estimate could be a range, a single number (flat rate) or "Metered" for TAXI.')
-                    )
-                    ->addProperty('low_estimate', DoubleElement::create()
-                            ->setFormat(null)
-                        ->setDescription('Lower bound of the estimated price.')
-                    )
-                    ->addProperty('high_estimate', DoubleElement::create()
-                            ->setFormat(null)
-                        ->setDescription('Upper bound of the estimated price.')
-                    )
-                    ->addProperty('surge_multiplier', DoubleElement::create()
-                            ->setFormat(null)
-                        ->setDescription('Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.')
-                    )
-            );
+        $specification->setDefinition(
+            'PriceEstimate',
+            ObjectElement::create()
+                ->addProperty('product_id', StringElement::create()
+                    ->setDescription('Unique identifier representing a specific product for a given latitude & longitude. For example, uberX in San Francisco will have a different product_id than uberX in Los Angeles.')
+                )
+                ->addProperty('currency_code', StringElement::create()
+                    ->setDescription('[ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code.')
+                )
+                ->addProperty('display_name', StringElement::create()
+                    ->setDescription('Display name of product.')
+                )
+                ->addProperty('estimate', StringElement::create()
+                    ->setDescription('Formatted string of estimate in local currency of the start location. Estimate could be a range, a single number (flat rate) or "Metered" for TAXI.')
+                )
+                ->addProperty('low_estimate', DoubleElement::create()
+                        ->setFormat(null)
+                    ->setDescription('Lower bound of the estimated price.')
+                )
+                ->addProperty('high_estimate', DoubleElement::create()
+                        ->setFormat(null)
+                    ->setDescription('Upper bound of the estimated price.')
+                )
+                ->addProperty('surge_multiplier', DoubleElement::create()
+                        ->setFormat(null)
+                    ->setDescription('Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.')
+                )
+        );
 
-        $specification->setDefinition('Profile',
-                ObjectElement::create()
-                    ->addProperty('first_name', StringElement::create()
-                        ->setDescription('First name of the Uber user.')
-                    )
-                    ->addProperty('last_name', StringElement::create()
-                        ->setDescription('Last name of the Uber user.')
-                    )
-                    ->addProperty('email', StringElement::create()
-                        ->setDescription('Email address of the Uber user')
-                    )
-                    ->addProperty('picture', StringElement::create()
-                        ->setDescription('Image URL of the Uber user.')
-                    )
-                    ->addProperty('promo_code', StringElement::create()
-                        ->setDescription('Promo code of the Uber user.')
-                    )
-            );
+        $specification->setDefinition(
+            'Profile',
+            ObjectElement::create()
+                ->addProperty('first_name', StringElement::create()
+                    ->setDescription('First name of the Uber user.')
+                )
+                ->addProperty('last_name', StringElement::create()
+                    ->setDescription('Last name of the Uber user.')
+                )
+                ->addProperty('email', StringElement::create()
+                    ->setDescription('Email address of the Uber user')
+                )
+                ->addProperty('picture', StringElement::create()
+                    ->setDescription('Image URL of the Uber user.')
+                )
+                ->addProperty('promo_code', StringElement::create()
+                    ->setDescription('Promo code of the Uber user.')
+                )
+        );
 
-        $specification->setDefinition('Activity',
-                ObjectElement::create()
-                    ->addProperty('uuid', StringElement::create()
-                        ->setDescription('Unique identifier for the activity')
-                    )
-            );
+        $specification->setDefinition(
+            'Activity',
+            ObjectElement::create()
+                ->addProperty('uuid', StringElement::create()
+                    ->setDescription('Unique identifier for the activity')
+                )
+        );
 
-        $specification->setDefinition('Activities',
-                ObjectElement::create()
-                    ->addProperty('offset', IntegerElement::create()
-                        ->setDescription('Position in pagination.')
-                    )
-                    ->addProperty('limit', IntegerElement::create()
-                        ->setDescription('Number of items to retrieve (100 max).')
-                    )
-                    ->addProperty('count', IntegerElement::create()
-                        ->setDescription('Total number of items available.')
-                    )
-                    ->addProperty('history', ArrayElement::create()
-                        ->setItems(ReferenceElement::create('Activity'))
-                        ->setDescription('Total number of items available.')
-                    )
-            );
+        $specification->setDefinition(
+            'Activities',
+            ObjectElement::create()
+                ->addProperty('offset', IntegerElement::create()
+                    ->setDescription('Position in pagination.')
+                )
+                ->addProperty('limit', IntegerElement::create()
+                    ->setDescription('Number of items to retrieve (100 max).')
+                )
+                ->addProperty('count', IntegerElement::create()
+                    ->setDescription('Total number of items available.')
+                )
+                ->addProperty('history', ArrayElement::create()
+                    ->setItems(ReferenceElement::create('Activity'))
+                    ->setDescription('Total number of items available.')
+                )
+        );
 
-        $specification->setDefinition('Error',
-                ObjectElement::create()
-                    ->addProperty('code', IntegerElement::create())
-                    ->addProperty('message', StringElement::create())
-                    ->addProperty('fields', StringElement::create())
-            );
+        $specification->setDefinition(
+            'Error',
+            ObjectElement::create()
+                ->addProperty('code', IntegerElement::create())
+                ->addProperty('message', StringElement::create())
+                ->addProperty('fields', StringElement::create())
+        );
 
         $this->assertJsonStringEqualsJsonFile(__DIR__.'/fixtures/uber-api-swagger.json', json_encode($specification, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
@@ -521,14 +525,16 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     public function testJsonSerializeThroughJsonEncodeWithEchoSpecificationExample()
     {
         $info = Info::create('Echo', '1.0.0')
-                ->setDescription("#### Echos back every URL, method, parameter and header\nFeel free to make a path or an operation and use **Try Operation** to test it. The echo server will\nrender back everything.\n");
+            ->setDescription("#### Echos back every URL, method, parameter and header\nFeel free to make a path or an operation and use **Try Operation** to test it. The echo server will\nrender back everything.\n");
 
         $specification = Specification::create($info)
-                ->setHost('mazimi-prod.apigee.net')
-                ->setSchemes(array('http'))
-                ->setBasePath('/echo');
+            ->setHost('mazimi-prod.apigee.net')
+            ->setSchemes(array('http'))
+            ->setBasePath('/echo');
 
-        $specification->setPath('/', PathItem::create()
+        $specification->setPath(
+            '/',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -548,10 +554,14 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                         FormDataParameter::create('year', StringElement::create())
                             ->setDescription('year')
                     )
-                ));
+                )
+        );
 
-        $specification->setPath('/test-path/{id}', PathItem::create()
-                ->setGet(Operation::create(
+        $specification->setPath(
+            '/test-path/{id}',
+            PathItem::create()
+                ->setGet(
+                    Operation::create(
                         Responses::create()
                             ->setResponse(Response::HTTP_OK, Response::create('Echo test-path'))
                     )
@@ -561,7 +571,7 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                         PathParameter::create('id', StringElement::create())->setDescription('ID'),
                     )
                 )
-            );
+        );
 
         $this->assertJsonStringEqualsJsonFile(__DIR__.'/fixtures/echo-swagger.json', json_encode($specification, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
@@ -576,19 +586,21 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     public function testJsonSerializeThroughJsonEncodeWithPetstoreSimpleSpecificationExample()
     {
         $info = Info::create('Swagger Petstore (Simple)', '1.0.0')
-                ->setDescription('A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification')
-                ->setTermsOfService('http://helloreverb.com/terms/')
-                ->setContact(Contact::create('Swagger API team', 'http://swagger.io', 'foo@example.com'))
-                ->setLicense(License::create('MIT', 'http://opensource.org/licenses/MIT'));
+            ->setDescription('A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification')
+            ->setTermsOfService('http://helloreverb.com/terms/')
+            ->setContact(Contact::create('Swagger API team', 'http://swagger.io', 'foo@example.com'))
+            ->setLicense(License::create('MIT', 'http://opensource.org/licenses/MIT'));
 
         $specification = Specification::create($info)
-                ->setHost('petstore.swagger.io')
-                ->setSchemes(array('http'))
-                ->setBasePath('/api')
-                ->setConsumes(array('application/json'))
-                ->setProduces(array('application/json'));
+            ->setHost('petstore.swagger.io')
+            ->setSchemes(array('http'))
+            ->setBasePath('/api')
+            ->setConsumes(array('application/json'))
+            ->setProduces(array('application/json'));
 
-        $specification->setPath('/pets', PathItem::create()
+        $specification->setPath(
+            '/pets',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -640,9 +652,12 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                             ->setDescription('Pet to add to the store')
                             ->setRequired(true)
                     )
-                ));
+                )
+        );
 
-        $specification->setPath('/pets/{id}', PathItem::create()
+        $specification->setPath(
+            '/pets/{id}',
+            PathItem::create()
                 ->setGet(
                     Operation::create(
                         Responses::create()
@@ -685,37 +700,41 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                         PathParameter::create('id', LongElement::create('newPet'))
                             ->setDescription('ID of pet to delete')
                     )
-                ));
+                )
+        );
 
-        $specification->setDefinition('pet',
-                ObjectElement::create()
-                    ->addProperty('id', LongElement::create()
-                        ->setRequired(true)
-                    )
-                    ->addProperty('name', StringElement::create()
-                        ->setRequired(true)
-                    )
-                    ->addProperty('tag', StringElement::create())
-            );
+        $specification->setDefinition(
+            'pet',
+            ObjectElement::create()
+                ->addProperty('id', LongElement::create()
+                    ->setRequired(true)
+                )
+                ->addProperty('name', StringElement::create()
+                    ->setRequired(true)
+                )
+                ->addProperty('tag', StringElement::create())
+        );
 
-        $specification->setDefinition('newPet',
-                ObjectElement::create()
-                    ->addProperty('id', LongElement::create())
-                    ->addProperty('name', StringElement::create()
-                        ->setRequired(true)
-                    )
-                    ->addProperty('tag', StringElement::create())
-            );
+        $specification->setDefinition(
+            'newPet',
+            ObjectElement::create()
+                ->addProperty('id', LongElement::create())
+                ->addProperty('name', StringElement::create()
+                    ->setRequired(true)
+                )
+                ->addProperty('tag', StringElement::create())
+        );
 
-        $specification->setDefinition('errorModel',
-                ObjectElement::create()
-                    ->addProperty('code', IntegerElement::create()
-                        ->setRequired(true)
-                    )
-                    ->addProperty('message', StringElement::create()
-                        ->setRequired(true)
-                    )
-            );
+        $specification->setDefinition(
+            'errorModel',
+            ObjectElement::create()
+                ->addProperty('code', IntegerElement::create()
+                    ->setRequired(true)
+                )
+                ->addProperty('message', StringElement::create()
+                    ->setRequired(true)
+                )
+        );
 
         $this->assertJsonStringEqualsJsonFile(__DIR__.'/fixtures/petstore-simple-swagger.json', json_encode($specification, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
