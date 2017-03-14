@@ -13,13 +13,28 @@ use PHPUnit_Framework_TestCase;
 class ResponseTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * The Response instance being tested.
+     *
+     * @var Response
+     */
+    private $response;
+
+    /**
+     * Creates a Response instance for testing.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->response = new Response('A description.');
+    }
+
+    /**
      * Tests if constructing a new Response instance sets the instance properties.
      */
     public function testConstruct()
     {
-        $response = new Response('A response description.');
-
-        $this->assertAttributeSame('A response description.', 'description', $response);
+        $this->assertAttributeSame('A description.', 'description', $this->response);
     }
 
     /**
@@ -28,27 +43,40 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     public function testSetSchema()
     {
         $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
-                ->getMock();
+            ->getMock();
 
-        $response = new Response('');
+        $this->assertInstanceOf('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\Response', $this->response->setSchema($schemaMock));
+        $this->assertAttributeSame($schemaMock, 'schema', $this->response);
+    }
 
-        $this->assertInstanceOf('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\Response', $response->setSchema($schemaMock));
-        $this->assertAttributeSame($schemaMock, 'schema', $response);
+    /**
+     * Tests if Response::addHeader adds the Header instance to the headers instance property and returns the Response instance.
+     */
+    public function testAddHeader()
+    {
+        $headerMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\HeaderInterface')
+            ->getMock();
+
+        $response = $this->response->addHeader($headerMock);
+
+        $this->assertSame($this->response, $response);
+        $this->assertAttributeSame(array($headerMock), 'headers', $this->response);
     }
 
     /**
      * Tests if Response::jsonSerialize returns the expected result.
+     *
+     * @depends testSetSchema
      */
     public function testJsonSerialize()
     {
         $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
-                ->getMock();
+            ->getMock();
         $schemaMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(array('type' => 'string'));
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'string'));
 
-        $response = new Response('A description.');
-        $response->setSchema($schemaMock);
+        $this->response->setSchema($schemaMock);
 
         $expectedResult = array(
             'description' => 'A description.',
@@ -57,7 +85,53 @@ class ResponseTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $this->assertEquals($expectedResult, $response->jsonSerialize());
+        $this->assertEquals($expectedResult, $this->response->jsonSerialize());
+    }
+
+    /**
+     * Tests if Response::jsonSerialize returns the expected result with a header set.
+     *
+     * @depends testJsonSerialize
+     */
+    public function testJsonSerializeWithHeaders()
+    {
+        $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
+            ->getMock();
+        $schemaMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'string'));
+
+        $headerMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\HeaderInterface')
+            ->getMock();
+        $headerMock->expects($this->once())
+            ->method('getName')
+            ->willReturn('X-Test-Header');
+        $headerMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(
+                array(
+                    'description' => 'The header description.',
+                    'type' => 'string',
+                )
+            );
+
+        $this->response->setSchema($schemaMock);
+        $this->response->addHeader($headerMock);
+
+        $expectedResult = array(
+            'description' => 'A description.',
+            'schema' => array(
+                'type' => 'string',
+            ),
+            'headers' => array(
+                'X-Test-Header' => array(
+                    'description' => 'The header description.',
+                    'type' => 'string',
+                ),
+            ),
+        );
+
+        $this->assertEquals($expectedResult, $this->response->jsonSerialize());
     }
 
     /**
@@ -66,27 +140,26 @@ class ResponseTest extends PHPUnit_Framework_TestCase
     public function testJsonSerializeThroughJsonEncode()
     {
         $schemaMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface')
-                ->getMock();
+            ->getMock();
         $schemaMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(array('type' => 'string'));
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'string'));
 
-        $response = new Response('A description.');
-        $response->setSchema($schemaMock);
+        $this->response->setSchema($schemaMock);
 
         $expectedResult = '{"description":"A description.","schema":{"type":"string"}}';
 
-        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($response));
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($this->response));
     }
 
     /**
-     * Tests if Specification::create returns a new Specification instance and sets the instance properties.
+     * Tests if Response::create returns a new Response instance and sets the instance properties.
      */
     public function testCreate()
     {
-        $response = Response::create('A response description.');
+        $response = Response::create('A description.');
 
         $this->assertInstanceOf('ConnectHolland\OpenAPISpecificationGenerator\Path\Response\Response', $response);
-        $this->assertAttributeSame('A response description.', 'description', $response);
+        $this->assertAttributeSame('A description.', 'description', $response);
     }
 }
