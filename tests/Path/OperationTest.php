@@ -14,17 +14,39 @@ use stdClass;
 class OperationTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * The Operation instance being tested.
+     *
+     * @var Operation
+     */
+    private $operation;
+
+    /**
+     * The Responses instance mock used for testing.
+     *
+     * @var Responses
+     */
+    private $responsesMock;
+
+    /**
+     * Creates a Operation for testing.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->operation = new Operation($this->responsesMock);
+    }
+
+    /**
      * Tests if constructing a new Operation instance sets the instance properties.
      */
     public function testConstruct()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
-
-        $operation = new Operation($responsesMock);
-
-        $this->assertAttributeSame($responsesMock, 'responses', $operation);
+        $this->assertAttributeSame($this->responsesMock, 'responses', $this->operation);
     }
 
     /**
@@ -32,13 +54,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetOperationId()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setOperationId('test-operation');
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setOperationId('test-operation'));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame('test-operation', 'operationId', $operation);
     }
 
@@ -47,13 +65,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetSummary()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setSummary('A summary.');
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setSummary('A summary.'));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame('A summary.', 'summary', $operation);
     }
 
@@ -62,13 +76,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetDescription()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setDescription('A description.');
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setDescription('A description.'));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame('A description.', 'description', $operation);
     }
 
@@ -77,13 +87,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetConsumes()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setConsumes(array('application/json'));
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setConsumes(array('application/json')));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame(array('application/json'), 'consumes', $operation);
     }
 
@@ -92,13 +98,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetProduces()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setProduces(array('application/json'));
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setProduces(array('application/json')));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame(array('application/json'), 'produces', $operation);
     }
 
@@ -107,13 +109,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetSchemes()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setSchemes(array('https'));
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setSchemes(array('https')));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame(array('https'), 'schemes', $operation);
     }
 
@@ -122,13 +120,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetTags()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setTags(array('tag'));
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setTags(array('tag')));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame(array('tag'), 'tags', $operation);
     }
 
@@ -137,13 +131,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testSetDeprecated()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $operation = $this->operation->setDeprecated(true);
 
-        $operation = new Operation($responsesMock);
-
-        $this->assertSame($operation, $operation->setDeprecated(true));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame(true, 'deprecated', $operation);
     }
 
@@ -152,16 +142,12 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testAddParameter()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
-
         $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
                 ->getMock();
 
-        $operation = new Operation($responsesMock);
+        $operation = $this->operation->addParameter($parameterMock);
 
-        $this->assertSame($operation, $operation->addParameter($parameterMock));
+        $this->assertSame($this->operation, $operation);
         $this->assertAttributeSame(array($parameterMock), 'parameters', $operation);
     }
 
@@ -170,29 +156,25 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testJsonSerialize()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $responsesMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(new stdClass());
+        $this->responsesMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(new stdClass());
 
         $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
-                ->getMock();
+            ->getMock();
         $parameterMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
+            ->method('jsonSerialize')
+            ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
 
-        $operation = new Operation($responsesMock);
-        $operation->setOperationId('test-operation');
-        $operation->setSummary('A summary.');
-        $operation->setDescription('A description.');
-        $operation->setConsumes(array('application/json'));
-        $operation->setProduces(array('application/json'));
-        $operation->setSchemes(array('https'));
-        $operation->setTags(array('tag'));
-        $operation->setDeprecated(true);
-        $operation->addParameter($parameterMock);
+        $this->operation->setOperationId('test-operation');
+        $this->operation->setSummary('A summary.');
+        $this->operation->setDescription('A description.');
+        $this->operation->setConsumes(array('application/json'));
+        $this->operation->setProduces(array('application/json'));
+        $this->operation->setSchemes(array('https'));
+        $this->operation->setTags(array('tag'));
+        $this->operation->setDeprecated(true);
+        $this->operation->addParameter($parameterMock);
 
         $expectedResult = array(
             'operationId' => 'test-operation',
@@ -215,7 +197,7 @@ class OperationTest extends PHPUnit_Framework_TestCase
             'tags' => array('tag'),
         );
 
-        $this->assertEquals($expectedResult, $operation->jsonSerialize());
+        $this->assertEquals($expectedResult, $this->operation->jsonSerialize());
     }
 
     /**
@@ -223,33 +205,29 @@ class OperationTest extends PHPUnit_Framework_TestCase
      */
     public function testJsonSerializeThroughJsonEncode()
     {
-        $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $responsesMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(new stdClass());
+        $this->responsesMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(new stdClass());
 
         $parameterMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Parameter\ParameterInterface')
-                ->getMock();
+            ->getMock();
         $parameterMock->expects($this->once())
-                ->method('jsonSerialize')
-                ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
+            ->method('jsonSerialize')
+            ->willReturn(array('name' => 'parameterName', 'in' => 'body', 'schema' => array('type' => 'string')));
 
-        $operation = new Operation($responsesMock);
-        $operation->setOperationId('test-operation');
-        $operation->setSummary('A summary.');
-        $operation->setDescription('A description.');
-        $operation->setConsumes(array('application/json'));
-        $operation->setProduces(array('application/json'));
-        $operation->setSchemes(array('https'));
-        $operation->setTags(array('tag'));
-        $operation->setDeprecated(true);
-        $operation->addParameter($parameterMock);
+        $this->operation->setOperationId('test-operation');
+        $this->operation->setSummary('A summary.');
+        $this->operation->setDescription('A description.');
+        $this->operation->setConsumes(array('application/json'));
+        $this->operation->setProduces(array('application/json'));
+        $this->operation->setSchemes(array('https'));
+        $this->operation->setTags(array('tag'));
+        $this->operation->setDeprecated(true);
+        $this->operation->addParameter($parameterMock);
 
         $expectedResult = '{"operationId":"test-operation","summary":"A summary.","description":"A description.","consumes":["application\/json"],"produces":["application\/json"],"parameters":[{"name":"parameterName","in":"body","schema":{"type":"string"}}],"responses":{},"schemes":["https"],"deprecated":true,"tags":["tag"]}';
 
-        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($operation));
+        $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($this->operation));
     }
 
     /**
@@ -258,8 +236,8 @@ class OperationTest extends PHPUnit_Framework_TestCase
     public function testCreate()
     {
         $responsesMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Path\Responses')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $operation = Operation::create($responsesMock);
 
