@@ -5,6 +5,7 @@ namespace ConnectHolland\OpenAPISpecificationGenerator;
 use ConnectHolland\OpenAPISpecificationGenerator\Info\Info;
 use ConnectHolland\OpenAPISpecificationGenerator\Path\PathItem;
 use ConnectHolland\OpenAPISpecificationGenerator\Schema\SchemaElementInterface;
+use ConnectHolland\OpenAPISpecificationGenerator\Security\SecuritySchemeInterface;
 use JsonSerializable;
 use stdClass;
 
@@ -77,6 +78,13 @@ class Specification implements JsonSerializable
      * @var SchemaElementInterface[]
      */
     private $definitions = array();
+
+    /**
+     * The security scheme definitions that can be used across the specification.
+     *
+     * @var SecuritySchemeInterface[]
+     */
+    private $securityDefinitions = array();
 
     /**
      * Additional external documentation.
@@ -196,6 +204,20 @@ class Specification implements JsonSerializable
     }
 
     /**
+     * Adds a security scheme definition that can be used across the specification.
+     *
+     * @param SecuritySchemeInterface $securityScheme
+     *
+     * @return Specification
+     */
+    public function addSecurityDefinition(SecuritySchemeInterface $securityScheme)
+    {
+        $this->securityDefinitions[] = $securityScheme;
+
+        return $this;
+    }
+
+    /**
      * Sets the additional external documentation.
      *
      * @param ExternalDocumentation $externalDocumentation
@@ -247,6 +269,12 @@ class Specification implements JsonSerializable
             $specification['definitions'] = array();
             foreach ($this->definitions as $definition => $schema) {
                 $specification['definitions'][$definition] = $schema->jsonSerialize();
+            }
+        }
+
+        if (empty($this->securityDefinitions) === false) {
+            foreach ($this->securityDefinitions as $securityScheme) {
+                $specification['securityDefinitions'][$securityScheme->getIdentifier()] = $securityScheme->jsonSerialize();
             }
         }
 

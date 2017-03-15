@@ -152,6 +152,20 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Specification::addSecurityDefinition adds the SecuritySchemeInterface instance to the instance property and returns the Specification instance.
+     */
+    public function testAddSecurityDefinition()
+    {
+        $securitySchemeMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Security\SecuritySchemeInterface')
+            ->getMock();
+
+        $specification = $this->specification->addSecurityDefinition($securitySchemeMock);
+
+        $this->assertSame($this->specification, $specification);
+        $this->assertAttributeSame(array($securitySchemeMock), 'securityDefinitions', $specification);
+    }
+
+    /**
      * Tests if Specification::setExternalDocumentation sets the ExternalDocumentation instance on instance property and returns the Specification instance.
      */
     public function testSetExternalDocumentation()
@@ -182,6 +196,43 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                 'version' => '1.0',
             ),
             'paths' => new stdClass(),
+        );
+
+        $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
+    }
+
+    /**
+     * Tests if Specification::jsonSerialize with security definitions added returns the expected result.
+     */
+    public function testJsonSerializeWithSecurityDefinitions()
+    {
+        $this->infoMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('title' => 'API', 'version' => '1.0'));
+
+        $securitySchemeMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Security\SecuritySchemeInterface')
+            ->getMock();
+        $securitySchemeMock->expects($this->once())
+            ->method('getIdentifier')
+            ->willReturn('basic_auth');
+        $securitySchemeMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'basic'));
+
+        $this->specification->addSecurityDefinition($securitySchemeMock);
+
+        $expectedResult = array(
+            'swagger' => '2.0',
+            'info' => array(
+                'title' => 'API',
+                'version' => '1.0',
+            ),
+            'paths' => new stdClass(),
+            'securityDefinitions' => array(
+                'basic_auth' => array(
+                    'type' => 'basic',
+                ),
+            ),
         );
 
         $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
