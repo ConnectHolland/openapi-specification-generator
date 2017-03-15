@@ -20,6 +20,14 @@ class Scopes implements JsonSerializable
     private $scopes = array();
 
     /**
+     * Returns the names of the scopes.
+     */
+    public function getNames()
+    {
+        return array_keys($this->scopes);
+    }
+
+    /**
      * Adds a scope.
      *
      * @param string $name        the name of the scope

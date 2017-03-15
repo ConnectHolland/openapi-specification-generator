@@ -48,6 +48,18 @@ class ScopesTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Scopes::getNames returns the names of the added scopes.
+     *
+     * @depends testAddScope
+     */
+    public function testGetNames()
+    {
+        $this->scopes->addScope('write:pets', 'modify pets in your account');
+
+        $this->assertSame(array('write:pets'), $this->scopes->getNames());
+    }
+
+    /**
      * Tests if Scopes::jsonSerialize returns the expected result when empty.
      */
     public function testJsonSerializeEmpty()
