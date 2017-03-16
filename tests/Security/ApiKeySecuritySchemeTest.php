@@ -59,4 +59,18 @@ class ApiKeySecuritySchemeTest extends AbstractSecuritySchemeTest
 
         $this->assertEquals($expectedResult, $this->securityScheme->jsonSerialize());
     }
+
+    /**
+     * Tests if ApiKeySecurityScheme::create returns a new ApiKeySecurityScheme instance and sets the instance properties.
+     */
+    public function testCreate()
+    {
+        $securityScheme = ApiKeySecurityScheme::create('foo', 'X-Test-Header', ApiKeySecurityScheme::IN_HEADER);
+
+        $this->assertInstanceOf('ConnectHolland\OpenAPISpecificationGenerator\Security\ApiKeySecurityScheme', $securityScheme);
+        $this->assertAttributeSame('foo', 'identifier', $this->securityScheme);
+        $this->assertAttributeSame(SecuritySchemeInterface::TYPE_API_KEY, 'type', $this->securityScheme);
+        $this->assertAttributeSame('X-Test-Header', 'name', $this->securityScheme);
+        $this->assertAttributeSame(ApiKeySecurityScheme::IN_HEADER, 'in', $this->securityScheme);
+    }
 }

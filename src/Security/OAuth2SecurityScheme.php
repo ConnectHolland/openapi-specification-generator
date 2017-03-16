@@ -111,4 +111,22 @@ class OAuth2SecurityScheme extends AbstractSecurityScheme
 
         return $securityScheme;
     }
+
+    /**
+     * Returns a new OAuth2SecurityScheme instance.
+     *
+     * @param string      $identifier       the identifier name for the security scheme
+     * @param string      $flow             the flow used by the OAuth2 security scheme. Valid values are "implicit", "password", "application" or "accessCode".
+     * @param string|null $authorizationUrl the authorization URL to be used for this flow. This SHOULD be in the form of a URL.
+     * @param string|null $tokenUrl         the token URL to be used for this flow. This SHOULD be in the form of a URL.
+     * @param Scopes      $scopes           the available scopes for the OAuth2 security scheme
+     *
+     * @throws InvalidArgumentException
+     *
+     * @return OAuth2SecurityScheme
+     */
+    public static function create($identifier, $flow, $authorizationUrl, $tokenUrl, Scopes $scopes)
+    {
+        return new self($identifier, $flow, $authorizationUrl, $tokenUrl, $scopes);
+    }
 }

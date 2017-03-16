@@ -188,6 +188,28 @@ class OAuth2SecuritySchemeTest extends AbstractSecuritySchemeTest
     }
 
     /**
+     * Tests if OAuth2SecurityScheme::create returns a new OAuth2SecurityScheme instance and sets the instance properties.
+     */
+    public function testCreate()
+    {
+        $securityScheme = OAuth2SecurityScheme::create(
+            'foo',
+            OAuth2SecurityScheme::FLOW_ACCESS_CODE,
+            'https://github.com/login/oauth/authorize',
+            'https://github.com/login/oauth/access_token',
+            $this->scopesMock
+        );
+
+        $this->assertInstanceOf('ConnectHolland\OpenAPISpecificationGenerator\Security\OAuth2SecurityScheme', $securityScheme);
+        $this->assertAttributeSame('foo', 'identifier', $this->securityScheme);
+        $this->assertAttributeSame(SecuritySchemeInterface::TYPE_OAUTH2, 'type', $this->securityScheme);
+        $this->assertAttributeSame(OAuth2SecurityScheme::FLOW_ACCESS_CODE, 'flow', $this->securityScheme);
+        $this->assertAttributeSame('https://github.com/login/oauth/authorize', 'authorizationUrl', $this->securityScheme);
+        $this->assertAttributeSame('https://github.com/login/oauth/access_token', 'tokenUrl', $this->securityScheme);
+        $this->assertAttributeSame($this->scopesMock, 'scopes', $this->securityScheme);
+    }
+
+    /**
      * Returns a list with cases that should throw an InvalidArgumentException with specific exception message during construction of a OAuth2SecurityScheme.
      *
      * @return array

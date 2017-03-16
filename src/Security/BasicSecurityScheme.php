@@ -18,4 +18,16 @@ class BasicSecurityScheme extends AbstractSecurityScheme
     {
         parent::__construct($identifier, self::TYPE_BASIC);
     }
+
+    /**
+     * Returns a new BasicSecurityScheme instance.
+     *
+     * @param string $identifier the identifier name for the security scheme
+     *
+     * @return BasicSecurityScheme
+     */
+    public static function create($identifier)
+    {
+        return new self($identifier);
+    }
 }

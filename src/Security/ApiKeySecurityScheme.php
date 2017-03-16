@@ -69,4 +69,18 @@ class ApiKeySecurityScheme extends AbstractSecurityScheme
 
         return $securityScheme;
     }
+
+    /**
+     * Returns a new ApiKeySecurityScheme instance.
+     *
+     * @param string $identifier the identifier name for the security scheme
+     * @param string $name       the name of the header or query parameter to be used
+     * @param string $in         the location of the API key. Valid values are "query" or "header".
+     *
+     * @return ApiKeySecurityScheme
+     */
+    public static function create($identifier, $name, $in)
+    {
+        return new self($identifier, $name, $in);
+    }
 }

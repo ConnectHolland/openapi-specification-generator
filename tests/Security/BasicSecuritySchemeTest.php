@@ -45,4 +45,16 @@ class BasicSecuritySchemeTest extends AbstractSecuritySchemeTest
 
         $this->assertEquals($expectedResult, $this->securityScheme->jsonSerialize());
     }
+
+    /**
+     * Tests if BasicSecurityScheme::create returns a new BasicSecurityScheme instance and sets the instance properties.
+     */
+    public function testCreate()
+    {
+        $securityScheme = BasicSecurityScheme::create('foo');
+
+        $this->assertInstanceOf('ConnectHolland\OpenAPISpecificationGenerator\Security\BasicSecurityScheme', $securityScheme);
+        $this->assertAttributeSame('foo', 'identifier', $securityScheme);
+        $this->assertAttributeSame(SecuritySchemeInterface::TYPE_BASIC, 'type', $securityScheme);
+    }
 }
