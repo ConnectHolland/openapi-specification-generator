@@ -153,6 +153,34 @@ class OperationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Operation::setSecurityRequirements sets the instance property to an empty array and returns the Operation instance.
+     */
+    public function testSetSecurityRequirementsEmpty()
+    {
+        $operation = $this->operation->setSecurityRequirements(array());
+
+        $this->assertSame($this->operation, $operation);
+        $this->assertAttributeSame(array(), 'securityRequirements', $operation);
+    }
+
+    /**
+     * Tests if Operation::setSecurityRequirements sets the instance property and returns the Operation instance.
+     *
+     * @depends testSetSecurityRequirementsEmpty
+     */
+    public function testSetSecurityRequirements()
+    {
+        $securityRequirementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Security\SecurityRequirement')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $operation = $this->operation->setSecurityRequirements(array($securityRequirementMock));
+
+        $this->assertSame($this->operation, $operation);
+        $this->assertAttributeSame(array($securityRequirementMock), 'securityRequirements', $operation);
+    }
+
+    /**
      * Tests if Operation::addParameter adds a ParameterInterface to the parameters property and returns the Operation instance.
      */
     public function testAddParameter()
@@ -188,6 +216,19 @@ class OperationTest extends PHPUnit_Framework_TestCase
             ->method('jsonSerialize')
             ->willReturn(array('url' => 'https://documentation.connectholland.nl'));
 
+        $securityRequirementMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Security\SecurityRequirement')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $securityRequirementMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(
+                array(
+                    'auth' => array(
+                        'api_key' => array(),
+                    ),
+                )
+            );
+
         $this->operation->setOperationId('test-operation');
         $this->operation->setSummary('A summary.');
         $this->operation->setDescription('A description.');
@@ -198,6 +239,7 @@ class OperationTest extends PHPUnit_Framework_TestCase
         $this->operation->setDeprecated(true);
         $this->operation->addParameter($parameterMock);
         $this->operation->setExternalDocumentation($externalDocumentationMock);
+        $this->operation->setSecurityRequirements(array($securityRequirementMock));
 
         $expectedResult = array(
             'operationId' => 'test-operation',
@@ -221,6 +263,13 @@ class OperationTest extends PHPUnit_Framework_TestCase
             'schemes' => array('https'),
             'deprecated' => true,
             'tags' => array('tag'),
+            'security' => array(
+                array(
+                    'auth' => array(
+                        'api_key' => array(),
+                    ),
+                ),
+            ),
         );
 
         $this->assertEquals($expectedResult, $this->operation->jsonSerialize());
@@ -250,8 +299,9 @@ class OperationTest extends PHPUnit_Framework_TestCase
         $this->operation->setTags(array('tag'));
         $this->operation->setDeprecated(true);
         $this->operation->addParameter($parameterMock);
+        $this->operation->setSecurityRequirements(array());
 
-        $expectedResult = '{"operationId":"test-operation","summary":"A summary.","description":"A description.","consumes":["application\/json"],"produces":["application\/json"],"parameters":[{"name":"parameterName","in":"body","schema":{"type":"string"}}],"responses":{},"schemes":["https"],"deprecated":true,"tags":["tag"]}';
+        $expectedResult = '{"operationId":"test-operation","summary":"A summary.","description":"A description.","consumes":["application\/json"],"produces":["application\/json"],"parameters":[{"name":"parameterName","in":"body","schema":{"type":"string"}}],"responses":{},"schemes":["https"],"deprecated":true,"tags":["tag"],"security":[]}';
 
         $this->assertJsonStringEqualsJsonString($expectedResult, json_encode($this->operation));
     }
