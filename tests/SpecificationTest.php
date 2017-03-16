@@ -20,6 +20,8 @@ use ConnectHolland\OpenAPISpecificationGenerator\Schema\Primitive\IntegerElement
 use ConnectHolland\OpenAPISpecificationGenerator\Schema\Primitive\LongElement;
 use ConnectHolland\OpenAPISpecificationGenerator\Schema\Primitive\StringElement;
 use ConnectHolland\OpenAPISpecificationGenerator\Schema\ReferenceElement;
+use ConnectHolland\OpenAPISpecificationGenerator\Security\BasicSecurityScheme;
+use ConnectHolland\OpenAPISpecificationGenerator\Security\SecurityRequirement;
 use ConnectHolland\OpenAPISpecificationGenerator\Specification;
 use PHPUnit_Framework_TestCase;
 use stdClass;
@@ -152,6 +154,20 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests if Specification::addSecurityDefinition adds the SecuritySchemeInterface instance to the instance property and returns the Specification instance.
+     */
+    public function testAddSecurityDefinition()
+    {
+        $securitySchemeMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Security\SecuritySchemeInterface')
+            ->getMock();
+
+        $specification = $this->specification->addSecurityDefinition($securitySchemeMock);
+
+        $this->assertSame($this->specification, $specification);
+        $this->assertAttributeSame(array($securitySchemeMock), 'securityDefinitions', $specification);
+    }
+
+    /**
      * Tests if Specification::setExternalDocumentation sets the ExternalDocumentation instance on instance property and returns the Specification instance.
      */
     public function testSetExternalDocumentation()
@@ -182,6 +198,43 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
                 'version' => '1.0',
             ),
             'paths' => new stdClass(),
+        );
+
+        $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
+    }
+
+    /**
+     * Tests if Specification::jsonSerialize with security definitions added returns the expected result.
+     */
+    public function testJsonSerializeWithSecurityDefinitions()
+    {
+        $this->infoMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('title' => 'API', 'version' => '1.0'));
+
+        $securitySchemeMock = $this->getMockBuilder('ConnectHolland\OpenAPISpecificationGenerator\Security\SecuritySchemeInterface')
+            ->getMock();
+        $securitySchemeMock->expects($this->once())
+            ->method('getIdentifier')
+            ->willReturn('basic_auth');
+        $securitySchemeMock->expects($this->once())
+            ->method('jsonSerialize')
+            ->willReturn(array('type' => 'basic'));
+
+        $this->specification->addSecurityDefinition($securitySchemeMock);
+
+        $expectedResult = array(
+            'swagger' => '2.0',
+            'info' => array(
+                'title' => 'API',
+                'version' => '1.0',
+            ),
+            'paths' => new stdClass(),
+            'securityDefinitions' => array(
+                'basic_auth' => array(
+                    'type' => 'basic',
+                ),
+            ),
         );
 
         $this->assertEquals($expectedResult, $this->specification->jsonSerialize());
@@ -785,5 +838,44 @@ class SpecificationTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertJsonStringEqualsJsonFile(__DIR__.'/fixtures/petstore-simple-swagger.json', json_encode($specification, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
+     * Tests if Specification::jsonSerialize returns the expected JSON encoded result through the json_encode function with the Basic Auth specification example.
+     *
+     * @see http://editor.swagger.io/ The editor containing the specification example
+     *
+     * @depends testJsonSerializeThroughJsonEncode
+     */
+    public function testJsonSerializeThroughJsonEncodeWithBasicAuthSpecificationExample()
+    {
+        $info = Info::create('Basic Auth Example', '1.0.0')
+            ->setDescription("An example for how to use Basic Auth with Swagger.\nServer code is available [here](https://github.com/mohsen1/basic-auth-server). It's running on Heroku.\n\n**User Name and Password**\n* User Name: `user`\n* Password: `pass`\n");
+
+        $securityScheme = BasicSecurityScheme::create('basicAuth')
+            ->setDescription('HTTP Basic Authentication. Works over `HTTP` and `HTTPS`');
+
+        $specification = Specification::create($info)
+            ->setHost('basic-auth-server.herokuapp.com')
+            ->setSchemes(array('http', 'https'))
+            ->addSecurityDefinition($securityScheme);
+
+        $specification->setPath(
+            '/',
+            PathItem::create()
+                ->setGet(
+                    Operation::create(
+                        Responses::create()
+                            ->setResponse(
+                                Response::HTTP_OK,
+                                Response::create('Will send `Authenticated` if authentication is succesful, otherwise it will send `Unauthorized`')
+                            )
+                    )->setSecurityRequirements(
+                        array(SecurityRequirement::create($securityScheme))
+                    )
+                )
+        );
+
+        $this->assertJsonStringEqualsJsonFile(__DIR__.'/fixtures/basic-auth.json', json_encode($specification, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }

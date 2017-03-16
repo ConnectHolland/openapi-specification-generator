@@ -93,9 +93,9 @@ class Operation implements JsonSerializable
     /**
      * A declaration of which security schemes are applied for this operation.
      *
-     * @var SecurityRequirement
+     * @var SecurityRequirement[]
      */
-    private $security;
+    private $securityRequirements;
 
     /**
      * Constructs a new Operation instance.
@@ -244,6 +244,25 @@ class Operation implements JsonSerializable
     }
 
     /**
+     * A declaration of which security schemes are applied for this operation.
+     * The list of values describes alternative security schemes that can be
+     * used (that is, there is a logical OR between the security requirements).
+     *
+     * This definition overrides any declared top-level security.
+     * To remove a top-level security declaration, an empty array can be used.
+     *
+     * @param SecurityRequirement[] $securityRequirements
+     *
+     * @return Operation
+     */
+    public function setSecurityRequirements(array $securityRequirements)
+    {
+        $this->securityRequirements = $securityRequirements;
+
+        return $this;
+    }
+
+    /**
      * Adds a parameter applicable for this operation.
      *
      * @param ParameterInterface $parameter
@@ -298,6 +317,12 @@ class Operation implements JsonSerializable
         }
         if (empty($this->tags) === false) {
             $operation['tags'] = $this->tags;
+        }
+        if (isset($this->securityRequirements)) {
+            $operation['security'] = array();
+            foreach ($this->securityRequirements as $securityRequirement) {
+                $operation['security'][] = $securityRequirement->jsonSerialize();
+            }
         }
 
         return $operation;
